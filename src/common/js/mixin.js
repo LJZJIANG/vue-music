@@ -13,3 +13,11 @@ export const testMixin = {
         }
     }
 }
+
+export const checkIsLogin = {
+    mounted(){
+        if(!this.$store.getters.isLogin){
+            this.$router.push('login');
+          }
+    }
+}

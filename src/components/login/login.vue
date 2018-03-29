@@ -50,6 +50,23 @@ export default {
              alert('密码不能为空')
             return
         }
+        this.$axios.get(this.$baseURL+'musicAppUsers.json').then(res=>{
+            const data = res.data;
+            let users = []
+            for (const key in data) {
+                users.push(data[key])
+            }
+
+            let result = users.filter(user=>{
+                return this.username===user.username && this.password === user.password
+            })
+            if(result.length){
+                this.$store.dispatch('setUser',result[0].username)
+                this.$router.push('recommend');
+            }else{
+                alert('用户或密码不正确')
+            }
+        })
       },
       clearUserName(){
           this.username = ''

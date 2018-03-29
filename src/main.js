@@ -6,10 +6,17 @@ import App from './App'
 import router from './router'
 import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
+import axios from 'axios'
+
+import {store} from './store/store'
+
 import './common/fonts/iconfont.css'
 import './common/stylus/index.styl'
 
 fastclick.attach(document.body)
+
+Vue.prototype.$axios = axios;
+Vue.prototype.$baseURL = 'https://wd3050824950qdrgzu.wilddogio.com/'
 
 Vue.use(VueLazyload,{
   loading:require('common/image/default.png')
@@ -20,6 +27,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
