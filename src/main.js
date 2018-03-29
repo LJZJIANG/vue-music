@@ -6,7 +6,7 @@ import App from './App'
 import router from './router'
 import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
-
+import './common/fonts/iconfont.css'
 import './common/stylus/index.styl'
 
 fastclick.attach(document.body)
