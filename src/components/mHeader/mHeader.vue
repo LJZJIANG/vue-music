@@ -1,12 +1,21 @@
 <template>
   <div class="m-header">
     <div class="icon"></div>
-    <h1 class="text">Water Music</h1>
+    <h1 class="text">{{getUser}}</h1>
   </div>
 </template>
 
 <script>
-  export default {}
+  export default {
+    computed:{
+      getUser(){
+        return this.$store.getters.currentUser
+      },
+      isLogin(){
+        return this.$store.getters.isLogin
+      }
+    }
+  }
 </script>
 
 <style scoped lang="stylus">

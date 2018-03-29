@@ -12,14 +12,14 @@ import Listview from "base/listview/listview";
 const HOT_NAME = "热门";
 const HOT_SINGER_LEN = 10;
 const OTHER_NAME= '其他';
-import {testMixin} from 'common/js/mixin'
+import {testMixin,checkIsLogin} from 'common/js/mixin'
 export default {
   data() {
     return {
       singerList: []
     };
   },
-  // mixins:[testMixin],
+  mixins:[testMixin,checkIsLogin],
   created() {
     this._getSingerList();
   },

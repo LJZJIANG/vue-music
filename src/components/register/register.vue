@@ -7,17 +7,17 @@
         <div class="main">
             <div class="username-box">
                 <span class="iconfont icon-zhucedengluyonghuming"></span>
-                <input type="text" placeholder="用户名" v-model="username">
+                <input type="text" placeholder="请输入用户名" v-model="username">
                 <span class="iconfont icon-shanchu" v-show="username.length" @click="clearUserName"></span>
             </div>
             <div class="password-box">
                 <span class="iconfont icon-zhucedenglumima"></span>
-                <input type="password" placeholder="密码" v-model="password">
+                <input type="password" placeholder="请输入密码" v-model="password">
                 <span class="iconfont icon-shanchu" v-show="password.length" @click="clearPassWord"></span>
             </div>
             <div class="password-box">
                 <span class="iconfont icon-zhucedenglumima"></span>
-                <input type="password" placeholder="确认密码" v-model="comfirmPassword">
+                <input type="password" placeholder="请输入确认密码" v-model="comfirmPassword">
                 <span class="iconfont icon-shanchu" v-show="comfirmPassword.length" @click="clearComfirmPassWord"></span>
             </div>
             <div class="login-box" @click="register">
@@ -56,7 +56,20 @@ export default {
         alert("密码和确认密码不相等");
         return;
       }
-      this.$router.push("login");
+
+      const formData = {
+        username: this.username,
+        password: this.password,
+        comfirmPassword: this.comfirmPassword
+      };
+      this.$axios.post(this.$baseURL+"musicAppUsers.json", formData).then(res => {
+        if (res.status == 200) {
+            this.username = '';
+            this.password = '';
+          // 注册成功，跳转登录页面
+          this.$router.push("/login");
+        }
+      });
     },
     clearUserName() {
       this.username = "";
@@ -64,8 +77,8 @@ export default {
     clearPassWord() {
       this.password = "";
     },
-    clearComfirmPassWord(){
-        this.comfirmPassword = ''
+    clearComfirmPassWord() {
+      this.comfirmPassword = "";
     }
   }
 };
