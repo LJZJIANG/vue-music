@@ -7,9 +7,10 @@
         <div class="main">
             <div class="username-box">
                 <span class="iconfont icon-zhucedengluyonghuming"></span>
-                <input type="text" placeholder="请输入用户名" v-model="username">
+                <input type="text" placeholder="请输入用户名" v-model="username" @blur.lazy="isExist()">
                 <span class="iconfont icon-shanchu" v-show="username.length" @click="clearUserName"></span>
             </div>
+            <p class="is-exist" v-show="Isexist" ref="username">用户名已存在</p>
             <div class="password-box">
                 <span class="iconfont icon-zhucedenglumima"></span>
                 <input type="password" placeholder="请输入密码" v-model="password">
@@ -31,12 +32,14 @@
   </div>
 </template>
 <script>
+import { addClass } from "../../common/js/dom"
 export default {
   data() {
     return {
       username: "",
       password: "",
-      comfirmPassword: ""
+      comfirmPassword: "",
+      Isexist: false
     };
   },
   methods: {
@@ -62,12 +65,36 @@ export default {
         password: this.password,
         comfirmPassword: this.comfirmPassword
       };
-      this.$axios.post(this.$baseURL+"musicAppUsers.json", formData).then(res => {
-        if (res.status == 200) {
-            this.username = '';
-            this.password = '';
-          // 注册成功，跳转登录页面
-          this.$router.push("/login");
+      if (!this.isExist) {
+        this.$axios
+          .post(this.$baseURL + "musicAppUsers.json", formData)
+          .then(res => {
+            if (res.status == 200) {
+              this.username = "";
+              this.password = "";
+              // 注册成功，跳转登录页面
+              this.$router.push("/login");
+            }
+          });
+      }
+    },
+    // 判断用户名是否存在
+    isExist() {
+      this.$axios.get(this.$baseURL + "musicAppUsers.json").then(res => {
+        const data = res.data;
+        let users = [];
+        for (const key in data) {
+          users.push(data[key]);
+        }
+
+        let result = users.filter(user => {
+          return this.username === user.username;
+        });
+        if (result.length) {
+          this.Isexist = true;
+          addClass(this.$refs.username,'move')
+        } else {
+          this.Isexist = false;
         }
       });
     },
@@ -84,6 +111,16 @@ export default {
 };
 </script>
 <style lang="stylus" scoped>
+@keyframes move {
+    0%{
+        color #ff0000
+        left -1.125rem
+    }
+    100%{
+        color #f80
+        left 1.125rem 
+    }
+}
 #login {
     position: fixed;
     width: 100%;
@@ -148,6 +185,18 @@ export default {
             input::-webkit-input-placeholder {
                 color: #75CDD1;
             }
+        }
+
+        .is-exist {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #f00;
+            margin: -5px 0 10px;
+            transition 1s
+            position relative
+        }
+        .move{
+            animation  move .5s ease  2
         }
 
         .username-box, .password-box {
