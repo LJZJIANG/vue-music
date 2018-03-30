@@ -6,14 +6,14 @@
         </div>
         <div class="main">
             <div class="username-box">
-                <span class="iconfont icon-zhucedengluyonghuming"></span>
+                <i class="icon icon-zhucedengluyonghuming"></i>
                 <input type="text" placeholder="用户名" v-model="username">
-                <span class="iconfont icon-shanchu" v-show="username.length" @click="clearUserName"></span>
+                <i class="icon icon-shanchu" v-show="username.length" @click="clearUserName"></i>
             </div>
             <div class="password-box">
-                <span class="iconfont icon-zhucedenglumima"></span>
+                <i class="icon icon-zhucedenglumima"></i>
                 <input type="password" placeholder="密码" v-model="password">
-                <span class="iconfont icon-shanchu" v-show="password.length"  @click="clearPassWord"></span>
+                <i class="icon icon-shanchu" v-show="password.length"  @click="clearPassWord"></i>
             </div>
             <div class="remember">
                 <label><input type="checkbox" name="" id="">&nbsp;记住用户名</label>
@@ -117,7 +117,7 @@ export default {
             position: relative;
             overflow: hidden;
 
-            .iconfont {
+            .icon {
                 position: absolute;
                 color: #75CDD1;
                 top: 0.825rem;
