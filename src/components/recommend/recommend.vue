@@ -39,7 +39,7 @@ import { getRecommend, getDiscList } from "api/recommend";
 import Slider from "base/slider/slider";
 import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
-import {checkIsLogin} from 'common/js/mixin'
+import { checkIsLogin } from "common/js/mixin";
 export default {
   data() {
     return {
@@ -47,10 +47,12 @@ export default {
       discList: []
     };
   },
-  mixins:[checkIsLogin],
+  mixins: [checkIsLogin],
   created() {
-    this._getRecommend();
-    this._getDiscList();
+    this.$nextTick(() => {
+      this._getRecommend();
+      this._getDiscList();
+    });
   },
   methods: {
     // 获取推荐
