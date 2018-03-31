@@ -6,20 +6,20 @@
         </div>
         <div class="main">
             <div class="username-box">
-                <span class="iconfont icon-zhucedengluyonghuming"></span>
+                 <img class="icon icon-user" src="../../common/image/user.png">
                 <input type="text" placeholder="请输入用户名" v-model="username" @blur.lazy="isExist()">
-                <span class="iconfont icon-shanchu" v-show="username.length" @click="clearUserName"></span>
+                <img class="icon icon-del"  src="../../common/image/del.png" v-show="username.length" @click="clearUserName">
             </div>
             <p class="is-exist" v-show="Isexist" ref="username">用户名已存在</p>
             <div class="password-box">
-                <span class="iconfont icon-zhucedenglumima"></span>
+                <img class="icon icon-password" src="../../common/image/password.png">
                 <input type="password" placeholder="请输入密码" v-model="password">
-                <span class="iconfont icon-shanchu" v-show="password.length" @click="clearPassWord"></span>
+                <img class="icon icon-del" v-show="password.length"  @click="clearPassWord"  src="../../common/image/del.png">
             </div>
             <div class="password-box">
-                <span class="iconfont icon-zhucedenglumima"></span>
+                <img class="icon icon-password" src="../../common/image/password.png">
                 <input type="password" placeholder="请输入确认密码" v-model="comfirmPassword">
-                <span class="iconfont icon-shanchu" v-show="comfirmPassword.length" @click="clearComfirmPassWord"></span>
+                 <img class="icon icon-del" v-show="comfirmPassword.length"  @click="clearComfirmPassWord"  src="../../common/image/del.png">
             </div>
             <div class="login-box" @click="register">
                 注 册
@@ -32,7 +32,7 @@
   </div>
 </template>
 <script>
-import { addClass } from "../../common/js/dom"
+import { addClass } from "../../common/js/dom";
 export default {
   data() {
     return {
@@ -65,10 +65,12 @@ export default {
         password: this.password,
         comfirmPassword: this.comfirmPassword
       };
-      if (!this.isExist) {
+      console.log(formData)
+      if (!this.Isexist) {
         this.$axios
           .post(this.$baseURL + "musicAppUsers.json", formData)
           .then(res => {
+              console.log(res)
             if (res.status == 200) {
               this.username = "";
               this.password = "";
@@ -92,7 +94,7 @@ export default {
         });
         if (result.length) {
           this.Isexist = true;
-          addClass(this.$refs.username,'move')
+          addClass(this.$refs.username, "move");
         } else {
           this.Isexist = false;
         }
@@ -112,15 +114,17 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @keyframes move {
-    0%{
-        color #ff0000
-        left -1.125rem
+    0% {
+        color: #ff0000;
+        left: -1.125rem;
     }
-    100%{
-        color #f80
-        left 1.125rem 
+
+    100% {
+        color: #f80;
+        left: 1.125rem;
     }
 }
+
 #login {
     position: fixed;
     width: 100%;
@@ -159,18 +163,21 @@ export default {
             position: relative;
             overflow: hidden;
 
-            .iconfont {
+            .icon {
                 position: absolute;
                 color: #75CDD1;
                 top: 0.825rem;
                 left: 0.825rem;
+                display: inline-block;
+                height: 1.05rem;
+                width: 1.05rem;
             }
 
-            .icon-shanchu {
+            .icon-del {
                 position: static;
                 float: right;
                 margin-right: 0.625rem;
-                line-height: 2.8125rem;
+                margin-top: 0.92rem;
             }
 
             input {
@@ -179,7 +186,7 @@ export default {
                 background: transparent;
                 font-size: 1rem;
                 color: #75CDD1;
-                padding: 0.75rem 1rem 0.75rem 0;
+                padding: 0.75rem 0rem 0.75rem 0;
             }
 
             input::-webkit-input-placeholder {
@@ -192,11 +199,12 @@ export default {
             font-size: 0.875rem;
             color: #f00;
             margin: -5px 0 10px;
-            transition 1s
-            position relative
+            transition: 1s;
+            position: relative;
         }
-        .move{
-            animation  move .5s ease  2
+
+        .move {
+            animation: move 0.5s ease 2;
         }
 
         .username-box, .password-box {

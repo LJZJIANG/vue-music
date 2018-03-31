@@ -10,7 +10,6 @@ import axios from 'axios'
 
 import {store} from './store/store'
 
-import './common/fonts/iconfont.css'
 import './common/stylus/index.styl'
 
 fastclick.attach(document.body)
