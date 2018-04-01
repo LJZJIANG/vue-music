@@ -36,7 +36,7 @@ export default {
       currentPageIndex: 0
     };
   },
-  mounted() {
+  created() {
     setTimeout(() => {
       this._setSliderWidth();
       this._initDots();

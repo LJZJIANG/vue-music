@@ -8,7 +8,7 @@
     }else{
         let newClass = ele.className.split(' ');
         newClass.push(className);
-        ele.className = newClass.join('');
+        ele.className = newClass.join(' ');
     }
  }
 
