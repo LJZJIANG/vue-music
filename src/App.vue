@@ -3,13 +3,14 @@
     <m-header></m-header>
     <tab></tab>
     <!-- 将页面存入缓存，页面返回时，不在请求数据 -->
-    <keep-alive>
+    <!-- <keep-alive> -->
       <router-view></router-view>
-    </keep-alive>
+    <!-- </keep-alive> -->
   </div>
 </template>
 
 <script>
+var _this;
 import MHeader from "components/mHeader/mHeader";
 import Tab from "components/tab/tab";
 export default {
@@ -19,7 +20,9 @@ export default {
     Tab
   },
   created() {
+    _this = this;
     var path, query, path_arr;
+    console.log(1111111111111111111)
     document.addEventListener("backbutton", function() {
       alert(111);
       var handled_path = "";
