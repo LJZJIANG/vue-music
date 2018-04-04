@@ -20,8 +20,8 @@ export const checkIsLogin = {
         if (autoLogin) {
             this.$store.dispatch('setUser',localStorage.getItem('username'))
         }
-        if(!this.$store.getters.isLogin){
-            this.$router.push('login');
+        if(this.$store.getters.isLogin){
+            this.$router.push('recommend');
           }
     }
 }

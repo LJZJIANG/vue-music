@@ -31,6 +31,8 @@
   </div>
 </template>
 <script>
+import { checkIsLogin } from "common/js/mixin";
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -40,10 +42,16 @@ export default {
       autoLogin: ""
     };
   },
+  mixins: [checkIsLogin],
   created() {
     this.getLocalStorage();
   },
   methods: {
+    /**@augments
+     * 使用辅助函数
+     */
+    //...mapMutations({ setUser: "userStatus" }), // 将userStatus函数映射到函数setUser上，通过this.setUser(传递的参数)，完成数据的传递
+    ...mapMutations(["userStatus"]),// 不映射函数，直接调用this.userStatus(传递的参数)，完成数据的传递
     login() {
       //   this.$router.push('recommend')
       let username = this.username;
@@ -75,7 +83,11 @@ export default {
           } else {
             this.removeLocalStorage();
           }
-          this.$store.dispatch("setUser", result[0].username);
+
+          //   this.$store.dispatch("setUser", result[0].username); //通过传统的事件分发
+          // this.setUser(result[0].username) //将mutations中的userStatus映射到setUser函数上
+          this.userStatus(result[0].username);
+
           this.$router.push("recommend");
         } else {
           alert("用户或密码不正确");
