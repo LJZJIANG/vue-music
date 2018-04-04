@@ -7,10 +7,10 @@
         :probe-type="probeType"
         ref="listview">
         <ul>
-            <li v-for="group in data" class="list-group" ref="listgroup">
+            <li v-for="(group,i) in data" class="list-group" ref="listgroup" :key="i">
                 <h2 class="list-group-title">{{group.title}}</h2>
                 <ul>
-                    <li v-for="item in group.items" class="list-group-item">
+                    <li v-for="(item,i) in group.items" class="list-group-item" :key="i">
                         <img class="avatar" v-lazy="item.avatar">
                         <span class="name">{{item.name}}</span>
                     </li>
@@ -23,7 +23,7 @@
                 <li v-for="(item,index) in listShortcut"  
                     class="item"   
                     :data-index="index"
-                    :class="{'current':currentIndex===index}">
+                    :class="{'current':currentIndex===index}" :key="index">
                     {{item}}
                 </li>
             </ul>
