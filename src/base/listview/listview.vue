@@ -1,5 +1,11 @@
 <template>
-    <scroll class="listview" :data='data' ref="listview">
+    <scroll 
+        @scroll="scroll"
+        class="listview" 
+        :data='data' 
+        :listen-scroll='listenScroll'
+        :probe-type="probeType"
+        ref="listview">
         <ul>
             <li v-for="group in data" class="list-group" ref="listgroup">
                 <h2 class="list-group-title">{{group.title}}</h2>
@@ -14,16 +20,26 @@
         <div class="list-shortcut" @touchstart.stop.prevent="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove"
          @touchend.stop>
             <ul>
-                <li v-for="(item,index) in listShortcut"  class="item" :data-index="index">
+                <li v-for="(item,index) in listShortcut"  
+                    class="item"   
+                    :data-index="index"
+                    :class="{'current':currentIndex===index}">
                     {{item}}
                 </li>
             </ul>
+        </div>
+        <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+            <div class="fixed-title">{{fixedTitle}} </div>
+        </div>
+        <div v-show="!data.length" class="loading-container">
+            <loading></loading>
         </div>
     </scroll>
 </template>
 <script>
 import Scroll from "base/scroll/scroll";
 import { getData } from "common/js/dom";
+import Loading from 'base/loading/loading'
 
 const TITLE_HEIGHT = 30;
 const ANCHOR_HEIGHT = 18;
@@ -36,9 +52,15 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      scrollY: -1,
+      currentIndex: 0,
+      diff: -1
+    };
   },
   created() {
+    this.probeType = 3;
+    this.listenScroll = true;
     this.touch = {};
     this.listHeight = [];
   },
@@ -47,10 +69,19 @@ export default {
       return this.data.map(item => {
         return item.title.substr(0, 1);
       });
+    },
+    fixedTitle() {
+      if (this.scrollY > 0) {
+        return "";
+      }
+      return this.data[this.currentIndex]
+        ? this.data[this.currentIndex].title
+        : "";
     }
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   methods: {
     //   触摸开始
@@ -68,8 +99,73 @@ export default {
       let anchorIndex = parseInt(this.touch.anchorIndex) + dalta;
       this._scrollTo(anchorIndex);
     },
+    scroll(pos) {
+      this.scrollY = pos.y;
+    },
     _scrollTo(index) {
-      this.$refs.listview.scrollToElement(this.$refs.listgroup[index]);
+      //   console.log(index);
+      if (!index && index !== 0) {
+        return;
+      }
+      if (index < 0) {
+        index = 0;
+      } else if (index > this.listHeight.length - 2) {
+        index = this.listHeight.length - 2;
+      }
+      this.scrollY = -this.listHeight[index];
+      this.$refs.listview.scrollToElement(this.$refs.listgroup[index], 0); // scrollToElement()的第二个参数，0  表示快速滚到指定位置，禁止缓动
+    },
+    _calculateHeight() {
+      this.listHeight = [];
+      const list = this.$refs.listgroup;
+      let height = 0; //最顶部位置
+      this.listHeight.push(height);
+      for (let i = 0; i < list.length - 1; i++) {
+        let item = list[i];
+        height += item.clientHeight;
+        this.listHeight.push(height);
+      }
+    }
+  },
+  //   监听数据的变化
+  watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateHeight();
+      }, 20);
+    },
+    scrollY(newY) {
+      const listHeight = this.listHeight;
+
+      // 最顶部
+      if (newY > 0) {
+        this.currentIndex = 0;
+        return;
+      }
+
+      // 在中间位置滚动
+      for (let i = 0; i < listHeight.length; i++) {
+        let height1 = listHeight[i];
+        let height2 = listHeight[i + 1];
+        if (-newY >= height1 && -newY < height2) {
+          this.currentIndex = i;
+          this.diff = height2 + newY;
+        //   console.log(this.diff);
+          return;
+        }
+      }
+
+      //   当滚动到底部，且-newY大于最后一个元素的上限
+      this.currentIndex = listHeight.length - 2;
+    },
+    diff(newVal) {
+      let fixedTop =
+        newVal > 0 && newVal < TITLE_HEIGHT ? newVal - TITLE_HEIGHT : 0;
+      if (this.fixedTop === fixedTop) {
+        return;
+      }
+      this.fixedTop = fixedTop;
+      this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`;
     }
   }
 };
