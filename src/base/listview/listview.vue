@@ -103,7 +103,7 @@ export default {
       this.scrollY = pos.y;
     },
     _scrollTo(index) {
-        // console.log(index);
+      //   console.log(index);
       if (!index && index !== 0) {
         return;
       }
