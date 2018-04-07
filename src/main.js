@@ -8,7 +8,7 @@ import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 import axios from 'axios'
 
-import {store} from './store/store'
+import store from './store'
 
 import './common/stylus/index.styl'
 
