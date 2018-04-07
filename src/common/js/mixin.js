@@ -18,7 +18,8 @@ export const checkIsLogin = {
     mounted(){
         let autoLogin = localStorage.getItem('autoLogin');
         if (autoLogin) {
-            this.$store.dispatch('setUser',localStorage.getItem('username'))
+            // this.$store.dispatch('setUser',localStorage.getItem('username'))
+            this.setUser(localStorage.getItem('username')); 
         }
         if(this.$store.getters.isLogin){
             this.$router.push('recommend');
