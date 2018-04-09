@@ -4,7 +4,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-// import fastclick from 'fastclick'
+import fastclick from 'fastclick'
 import VueLazyload from 'vue-lazyload'
 import axios from 'axios'
 
@@ -12,7 +12,7 @@ import store from './store'
 
 import './common/stylus/index.styl'
 
-// fastclick.attach(document.body)
+ fastclick.attach(document.body)
 
 Vue.prototype.$axios = axios;
 Vue.prototype.$baseURL = 'https://wd3050824950qdrgzu.wilddogio.com/'
