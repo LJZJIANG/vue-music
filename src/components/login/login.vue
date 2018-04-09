@@ -50,7 +50,7 @@ export default {
     /**@augments
      * 使用辅助函数
      */
-    ...mapMutations({ setUser: "USER_STATUS" }), // 将userStatus函数映射到函数setUser上，通过this.setUser(传递的参数)，完成数据的传递
+    ...mapMutations({ setUser: "SET_USER_STATE" }), // 将userStatus函数映射到函数setUser上，通过this.setUser(传递的参数)，完成数据的传递
     // ...mapMutations(["userStatus"]),// 不映射函数，直接调用this.userStatus(传递的参数)，完成数据的传递
     login() {
       //   this.$router.push('recommend')

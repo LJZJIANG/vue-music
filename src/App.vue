@@ -6,6 +6,7 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <player></player>
   </div>
 </template>
 
@@ -13,11 +14,13 @@
 var _this;
 import MHeader from "components/mHeader/mHeader";
 import Tab from "components/tab/tab";
+import Player from 'components/player/player'
 export default {
   name: "App",
   components: {
     MHeader,
-    Tab
+    Tab,
+    Player
   },
   created() {
     _this = this;
