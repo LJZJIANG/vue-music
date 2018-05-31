@@ -17,6 +17,7 @@ import './common/stylus/index.styl'
 Vue.prototype.$axios = axios;
 Vue.prototype.$baseURL = 'https://wd3050824950qdrgzu.wilddogio.com/'
 
+// 图片懒加载
 Vue.use(VueLazyload,{
   loading:require('common/image/default.png')
 })

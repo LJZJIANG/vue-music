@@ -25,7 +25,6 @@ export default {
   created() {
     _this = this;
     var path, query, path_arr;
-    console.log(1111111111111111111)
     document.addEventListener("backbutton", function() {
       alert(111);
       var handled_path = "";
