@@ -9,9 +9,9 @@
                 <img @load="loadImage" class="needsclick" :src="item.picUrl">
               </a>
             </div>
-          </slider>          
-        </div>        
-         <div class="recommend-list">
+          </slider>
+        </div>
+        <div class="recommend-list">
           <h1 class="list-title">热门歌曲推荐</h1>
           <ul>
             <li v-for="(item,index) in discList" class="item" :key="index">
@@ -24,7 +24,7 @@
               </div>
             </li>
           </ul>
-        </div> 
+        </div>
       </div>
       <div class="loading-container" v-show="!discList.length">
         <loading></loading>
@@ -36,9 +36,11 @@
 <script>
 import { ERR_OK } from "api/config";
 import { getRecommend, getDiscList } from "api/recommend";
+import { checkIsLogin } from "common/js/mixin";
 import Slider from "base/slider/slider";
 import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -46,6 +48,7 @@ export default {
       discList: []
     };
   },
+  mixins: [checkIsLogin],
   created() {
     this.$nextTick(() => {
       this._getRecommend();
@@ -75,7 +78,8 @@ export default {
         this.$refs.scroll.refresh();
       }
       // console.log(this.$refs.scroll)
-    }
+    },
+    ...mapMutations({ setUser: "SET_USER_STATE" })
   },
   components: {
     Slider,
