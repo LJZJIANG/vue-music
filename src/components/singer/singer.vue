@@ -35,7 +35,6 @@ export default {
     selectSinger(singer){
       this.$router.push(`singer/${singer.id}`)
       this.setSinger(singer);
-      console.log(singer)
     },
     _getSingerList() {
       getSingerList().then(res => {
