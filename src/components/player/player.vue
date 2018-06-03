@@ -39,24 +39,24 @@
             <span class="dot"></span>
           </div>
           <div class="progress-wrapper">
-            <span class="time time-l"></span>
+            <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <!-- <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar> -->
+              <progress-bar :percent="percent"></progress-bar>
             </div>
-            <span class="time time-r"></span>
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
             <div class="icon i-left">
               <i></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i class="icon"></i>
@@ -76,8 +76,8 @@
         </div>
         <div class="control">
           <!-- <progress-circle :radius="radius" :percent="percent"> -->
-            <!-- 需要阻止事件冒泡 -->
-          <i @click.stop="togglePlaying"  :class="miniIcon"></i>
+          <!-- 需要阻止事件冒泡 -->
+          <i @click.stop="togglePlaying" :class="miniIcon"></i>
           <!-- </progress-circle> -->
         </div>
         <div class="control">
@@ -85,10 +85,8 @@
         </div>
       </div>
     </transition>
-    <!-- <playlist ref="playlist"></playlist>
-    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime"
-           @ended="end"></audio> -->
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <!-- <playlist ref="playlist"></playlist>-->
+    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 
@@ -96,10 +94,17 @@
 import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
+import ProgressBar from "base/progress-bar/progress-bar";
 export default {
+  data() {
+    return {
+      songReady: false,
+      currentTime: 0
+    };
+  },
   computed: {
-    cdCls(){
-     return this.playing ? 'play' : 'play pause'
+    cdCls() {
+      return this.playing ? "play" : "play pause";
     },
     playIcon() {
       return this.playing ? "icon-pause" : "icon-play";
@@ -107,7 +112,20 @@ export default {
     miniIcon() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
     },
-    ...mapGetters(["fullScreen", "playlist", "currentSong", "playing"])
+    disableCls() {
+      return this.songReady ? "" : "disable";
+    },
+    // 计算进度条百分比
+    percent() {
+      return this.currentTime / this.currentSong.duration;
+    },
+    ...mapGetters([
+      "fullScreen",
+      "playlist",
+      "currentSong",
+      "playing",
+      "currentIndex"
+    ])
   },
   methods: {
     // 关闭全屏
@@ -115,6 +133,7 @@ export default {
       this.setFullScreen(false);
     },
     togglePlaying() {
+      if (!this.songReady) return;
       // 改变播放的状态
       this.setPlayingState(!this.playing);
     },
@@ -164,6 +183,64 @@ export default {
     open() {
       this.setFullScreen(true);
     },
+    // 下一首
+    next() {
+      if (!this.songReady) return;
+      let index = this.currentIndex + 1;
+      if (index === this.playlist.length) {
+        index = 0;
+      }
+      this.setCurrentIndex(index);
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+      this.songReady = false;
+    },
+    // 上一首
+    prev() {
+      if (!this.songReady) return;
+      let index = this.currentIndex - 1;
+      if (index === -1) {
+        index = this.playlist.length - 1;
+      }
+      this.setCurrentIndex(index);
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+      this.songReady = false;
+    },
+    // 音频准备就绪
+    ready() {
+      this.songReady = true;
+    },
+    // 音频资源出错、网错错误等回调
+    error() {
+      this.songReady = true;
+    },
+    // 获取当前播放时间
+    updateTime(e) {
+      // console.log(e)
+      return (this.currentTime = e.target.currentTime);
+    },
+    end() {
+      
+    },
+    // 格式化时间戳
+    format(interval) {
+      interval = interval | 0; //取整，和Math.floor一样
+      const minute = (interval / 60) | 0;
+      const second = this._pad(interval % 60);
+      return `${minute}:${second}`;
+    },
+    // 数字补零
+    _pad(num, n = 2) {
+      let length = num.toString().length;
+      while (length < n) {
+        num = "0" + num;
+        length++;
+      }
+      return num;
+    },
     _getPosAndScale() {
       const targetWidth = 40;
       const paddingLeft = 40;
@@ -181,8 +258,12 @@ export default {
     },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
-      setPlayingState: "SET_PALYING_STATE"
+      setPlayingState: "SET_PALYING_STATE",
+      setCurrentIndex: "SET_CURRENT_INDEX"
     })
+  },
+  components: {
+    ProgressBar
   },
   watch: {
     currentSong(newsong) {
@@ -197,7 +278,7 @@ export default {
     playing(newPlaying) {
       const audio = this.$refs.audio;
       this.$nextTick(() => {
-        this.playing ? audio.play() : audio.pause();
+        newPlaying ? audio.play() : audio.pause();
       });
     }
   }
