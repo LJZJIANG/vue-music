@@ -41,7 +41,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent"></progress-bar>
+              <progress-bar :percent="percent" @percent="percentChange"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -137,6 +137,13 @@ export default {
       // 改变播放的状态
       this.setPlayingState(!this.playing);
     },
+    // 获取子组件传递过来的滑动值，设置当前播放进度
+    percentChange(percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent;
+      if (!this.playing) {
+        this.togglePlaying();
+      }
+    },
     // 动画钩子函数
     enter(el, done) {
       const { x, y, scale } = this._getPosAndScale();
@@ -186,6 +193,8 @@ export default {
     // 下一首
     next() {
       if (!this.songReady) return;
+      // 将进度条进度归零
+      this.currentTime = 0;
       let index = this.currentIndex + 1;
       if (index === this.playlist.length) {
         index = 0;
@@ -199,6 +208,8 @@ export default {
     // 上一首
     prev() {
       if (!this.songReady) return;
+      // 将进度条进度归零
+      this.currentTime = 0;
       let index = this.currentIndex - 1;
       if (index === -1) {
         index = this.playlist.length - 1;
@@ -222,8 +233,12 @@ export default {
       // console.log(e)
       return (this.currentTime = e.target.currentTime);
     },
+    // 播放结束
     end() {
-      
+      // 自动播放下一首
+      this.next();
+      // 将进度条进度归零
+      this.currentTime = 0;
     },
     // 格式化时间戳
     format(interval) {
