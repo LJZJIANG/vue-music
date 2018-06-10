@@ -58,7 +58,10 @@ export default {
     },
     // 点击进度条
     progressClick(e) {
-      this._offset(e.offsetX);
+      // 获取进度条按钮距离浏览器窗口的距离
+      const rect = this.$refs.progressBar.getBoundingClientRect();
+      const offsetWidth = e.pageX - rect.left;
+      this._offset(offsetWidth);
       this._triggerPercent();
     },
     _triggerPercent() {

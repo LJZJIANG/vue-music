@@ -41,13 +41,13 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent" @percent="percentChange"></progress-bar>
+              <progress-bar :percent="percent" @percent="percentChange" ref="progressBar"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left">
-              <i></i>
+            <div class="icon i-left" @click="changePlayMode">
+              <i :class="iconMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i @click="prev" class="icon-prev"></i>
@@ -75,10 +75,10 @@
           <p class="desc" :v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <!-- <progress-circle :radius="radius" :percent="percent"> -->
-          <!-- 需要阻止事件冒泡 -->
-          <i @click.stop="togglePlaying" :class="miniIcon"></i>
-          <!-- </progress-circle> -->
+          <progress-circle :radius="radius" :percent="percent">
+            <!-- 需要阻止事件冒泡 -->
+            <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -94,12 +94,17 @@
 import { mapGetters, mapMutations } from "vuex";
 import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
+import { playMode } from "common/js/config";
+import { shuffle } from "common/js/util";
 import ProgressBar from "base/progress-bar/progress-bar";
+import ProgressCircle from "base/progress-circle/progress-circle";
+
 export default {
   data() {
     return {
       songReady: false,
-      currentTime: 0
+      currentTime: 0,
+      radius: 32
     };
   },
   computed: {
@@ -111,6 +116,11 @@ export default {
     },
     miniIcon() {
       return this.playing ? "icon-pause-mini" : "icon-play-mini";
+    },
+    iconMode() {
+      return this.mode === playMode.sequence
+        ? "icon-sequence"
+        : this.mode === playMode.loop ? "icon-loop" : "icon-random";
     },
     disableCls() {
       return this.songReady ? "" : "disable";
@@ -124,7 +134,9 @@ export default {
       "playlist",
       "currentSong",
       "playing",
-      "currentIndex"
+      "currentIndex",
+      "mode",
+      "sequenceList"
     ])
   },
   methods: {
@@ -143,6 +155,28 @@ export default {
       if (!this.playing) {
         this.togglePlaying();
       }
+    },
+    // 切换播放模式
+    changePlayMode() {
+      const mode = (this.mode + 1) % 3;
+      this.setPlayMode(mode);
+      let list = null;
+      if (mode === playMode.random) {
+        // 随机播放
+        list = shuffle(this.sequenceList);
+      } else {
+        // 顺序播放
+        list = this.sequenceList;
+      }
+      this.resetCurrentIndex(list);
+      this.setPlayList(list);
+    },
+    resetCurrentIndex(list) {
+      // 获取相同id的第一个元素的索引
+      let index = list.findIndex(item => {
+        return item.id === this.currentSong.id;
+      });
+      this.setCurrentIndex(index);
     },
     // 动画钩子函数
     enter(el, done) {
@@ -235,10 +269,13 @@ export default {
     },
     // 播放结束
     end() {
-      // 自动播放下一首
-      this.next();
-      // 将进度条进度归零
-      this.currentTime = 0;
+      if (this.mode === playMode.loop) {
+        this.$refs.audio.currentTime = 0;
+        this.$refs.audio.play();
+      }else{
+        // 自动播放下一首
+        this.next();
+      }
     },
     // 格式化时间戳
     format(interval) {
@@ -274,18 +311,21 @@ export default {
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
       setPlayingState: "SET_PALYING_STATE",
-      setCurrentIndex: "SET_CURRENT_INDEX"
+      setCurrentIndex: "SET_CURRENT_INDEX",
+      setPlayMode: "SET_MODE",
+      setPlayList: "SET_PLAY_LIST"
     })
   },
   components: {
-    ProgressBar
+    ProgressBar,
+    ProgressCircle
   },
   watch: {
-    currentSong(newsong) {
-      // console.log(newsong)
+    currentSong(newsong, oldsong) {
       if (!newsong.id) {
         return;
       }
+      if (newsong.id === oldsong.id) return;
       this.$nextTick(() => {
         this.$refs.audio.play();
       });
