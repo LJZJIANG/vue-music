@@ -2,6 +2,8 @@
 
 > Vue.js 打造高级实战——音乐 App
 
+# [项目演示地址:](https://github.com/LJZJIANG/vue-music/dist/index.html) 
+
 ## 项目树
 ```
 .
