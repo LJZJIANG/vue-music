@@ -12,22 +12,34 @@ import store from './store'
 
 import './common/stylus/index.styl'
 
- fastclick.attach(document.body)
+fastclick.attach(document.body)
 
 Vue.prototype.$axios = axios;
 Vue.prototype.$baseURL = 'https://wd3050824950qdrgzu.wilddogio.com/'
 
 // 图片懒加载
-Vue.use(VueLazyload,{
-  loading:require('common/image/default.png')
+Vue.use(VueLazyload, {
+  loading: require('common/image/default.png')
 })
 Vue.config.productionTip = false
 
+// 全局守卫
+/* router.beforeEach((to, from, next) => {
+  console.log(to)
+  console.log(from)
+  next();
+}) */
+/* router.afterEach((to, from) => {
+  console.log(to)
+  console.log(from)
+}) */
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   store,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })
