@@ -23,15 +23,16 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
-          <!-- <scroll class="middle-r" ref="lyricList" >
+           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
-              <div>
+              <div v-if="currentLyric">
                 <p ref="lyricLine"
                    class="text"
-                 </p>
+                   :class="{'current': currentLineNum ===index}"
+                   v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
               </div>
             </div>
-          </scroll> -->
+          </scroll>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
@@ -98,13 +99,17 @@ import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
 import ProgressBar from "base/progress-bar/progress-bar";
 import ProgressCircle from "base/progress-circle/progress-circle";
+import Scroll from 'base/scroll/scroll'
+import Lyric from "lyric-parser";
 
 export default {
   data() {
     return {
       songReady: false,
       currentTime: 0,
-      radius: 32
+      radius: 32,
+      currentLyric: null,
+      currentLineNum: 0
     };
   },
   computed: {
@@ -170,6 +175,26 @@ export default {
       }
       this.resetCurrentIndex(list);
       this.setPlayList(list);
+    },
+    getLyric() {
+      this.currentSong.getLyric().then(lyric => {
+        if (this.currentSong.lyric != lyric) return;
+        this.currentLyric = new Lyric(lyric, this.handleLyric);
+        console.log(this.currentLyric);
+        if (this.playing) {
+          this.currentLyric.play();
+        }
+      });
+    },
+    handleLyric({ lineNum, txt }) {
+      this.currentLineNum = lineNum;
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5];
+        this.$refs.lyricList.scrollToElement(lineEl, 1000);
+      } else {
+        this.$refs.lyricList.scrollTo(0, 0, 1000);
+      }
+      this.playingLyric = txt;
     },
     resetCurrentIndex(list) {
       // 获取相同id的第一个元素的索引
@@ -272,7 +297,7 @@ export default {
       if (this.mode === playMode.loop) {
         this.$refs.audio.currentTime = 0;
         this.$refs.audio.play();
-      }else{
+      } else {
         // 自动播放下一首
         this.next();
       }
@@ -318,7 +343,8 @@ export default {
   },
   components: {
     ProgressBar,
-    ProgressCircle
+    ProgressCircle,
+    Scroll
   },
   watch: {
     currentSong(newsong, oldsong) {
@@ -328,6 +354,7 @@ export default {
       if (newsong.id === oldsong.id) return;
       this.$nextTick(() => {
         this.$refs.audio.play();
+        this.getLyric();
       });
     },
     playing(newPlaying) {

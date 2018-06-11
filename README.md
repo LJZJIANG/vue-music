@@ -10,7 +10,7 @@
 ├── README.md
 ├── build
 │   ├── build.js
-│   ├── check-versions.js
+│   ├── check-versions.jscls
 │   ├── dev-client.js
 │   ├── dev-server.js
 │   ├── utils.js
