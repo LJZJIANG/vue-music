@@ -11,50 +11,53 @@ import SingerDetail from '@/components/singer-detail/singer-detail'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
+  routes: [{
       path: '/',
-      redirect:'login'
+      redirect: 'login'
     },
     {
-      path:'/recommend',
-      name:'recommend',
-      component:Recommend
+      path: '/recommend',
+      name: 'recommend',
+      component: Recommend,
+      // 路由独享守卫
+     /*  beforeEnter: (to, from, next) => {
+        console.log(to)
+        console.log(from)
+        next()
+      } */
     },
     {
-      path:'/singer',
-      name:'singer',
-      component:Singer,
-      children:[
-        {
-          path:':id',
-          component:SingerDetail
-        }
-      ]
+      path: '/singer',
+      name: 'singer',
+      component: Singer,
+      children: [{
+        path: ':id',
+        component: SingerDetail
+      }]
     },
     {
-      path:'/rank',
-      name:'rank',
-      component:Rank
+      path: '/rank',
+      name: 'rank',
+      component: Rank
     },
     {
-      path:'/login',
-      name:'login',
-      component:Login
+      path: '/login',
+      name: 'login',
+      component: Login
     },
     {
-      path:'/register',
-      name:'register',
-      component:Register
+      path: '/register',
+      name: 'register',
+      component: Register
     },
     {
-      path:'/search',
-      name:'search',
-      component:Search
+      path: '/search',
+      name: 'search',
+      component: Search
     },
     {
-      path:'*',
-      redirect:'recommend'
+      path: '*',
+      redirect: 'recommend'
     }
   ]
 })
