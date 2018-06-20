@@ -32,12 +32,14 @@ import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
 import { prefixStyle } from "common/js/dom";
 import {mapActions } from 'vuex';
+import {playListMixin} from 'common/js/mixin'
 
 const transform = prefixStyle("transform");
 const backdrop = prefixStyle("backdrop-filter");
 const RESERVED_HEIGHT = 40;
 
 export default {
+  mixins:[playListMixin],
   props: {
     songs: {
       type: Array,
@@ -72,6 +74,16 @@ export default {
     }
   },
   methods: {
+    handlePlaylist(playlist){
+      // playlist 从mixin中的传过来
+        const bottom = playlist.length>0?'60px':'';
+        const list = this.$refs.list;
+        if (list) {
+          list.$el.style.bottom = bottom;
+          // 调用子组件的refresh方法，刷新
+          list.refresh();
+        }
+    },
     back() {
       this.$router.back(1);
     },

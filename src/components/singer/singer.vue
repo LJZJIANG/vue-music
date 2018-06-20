@@ -1,6 +1,6 @@
 <template>
   <div class="singer" ref="singer">
-    <listview :data='singerList' @selectItem = 'selectSinger'></listview>
+    <listview :data='singerList' @selectItem='selectSinger' ref="listview"></listview>
     <router-view></router-view>
   </div>
 </template>
@@ -10,13 +10,12 @@ import { getSingerList } from "api/singer";
 import { ERR_OK } from "api/config";
 import Singer from "common/js/singer";
 import Listview from "base/listview/listview";
-// import {testMixin} from 'common/js/mixin'
-import {mapMutations} from 'vuex'
-
+import { playListMixin } from "common/js/mixin";
+import { mapMutations } from "vuex";
 
 const HOT_NAME = "热门";
 const HOT_SINGER_LEN = 10;
-const OTHER_NAME= '其他';
+const OTHER_NAME = "其他";
 
 export default {
   data() {
@@ -24,22 +23,30 @@ export default {
       singerList: []
     };
   },
-  // mixins:[testMixin],
+  mixins: [playListMixin],
   created() {
     this._getSingerList();
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      const list = this.$refs.singer;
+      if (list) {
+        list.style.bottom = bottom;
+        this.$refs.listview.refresh();
+      }
+    },
     ...mapMutations({
-      setSinger:'SET_SINGER'
+      setSinger: "SET_SINGER"
     }),
-    selectSinger(singer){
-      this.$router.push(`singer/${singer.id}`)
+    selectSinger(singer) {
+      this.$router.push(`singer/${singer.id}`);
       this.setSinger(singer);
     },
     _getSingerList() {
       getSingerList().then(res => {
         if (res.code === ERR_OK) {
-          this.singerList =this. __normalizeSinger(res.data.list)
+          this.singerList = this.__normalizeSinger(res.data.list);
           // console.log(this.__normalizeSinger(res.data.list));
         }
       });
@@ -67,7 +74,7 @@ export default {
         let key = item.Findex;
         if (!key.match(/[a-zA-Z]/)) {
           key = OTHER_NAME;
-        }        
+        }
         // 如果map中map[key]没有对应的,则添加
         if (!map[key]) {
           map[key] = {
@@ -86,14 +93,14 @@ export default {
       // 为了得到有序列表，我们需要处理 map
       let ret = [];
       let hot = [];
-      let other = [];//存储title为数字之类的歌手
+      let other = []; //存储title为数字之类的歌手
       for (const key in map) {
         let val = map[key];
         if (val.title === HOT_NAME) {
           hot.push(val);
         } else if (val.title.match(/[a-zA-Z]/)) {
           ret.push(val);
-        }else{
+        } else {
           other.push(val);
         }
       }
@@ -103,10 +110,10 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0);
       });
       // 将两个数组拼接
-      return hot.concat(ret,other);
+      return hot.concat(ret, other);
     }
   },
-  components:{
+  components: {
     Listview
   }
 };
@@ -118,11 +125,12 @@ export default {
   top: 88px;
   bottom: 0;
   width: 100%;
-  .social-share{
-    position fixed
-    width 100%
-    bottom 0
-    left 0
+
+  .social-share {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
   }
 }
 </style>
