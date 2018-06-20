@@ -41,6 +41,7 @@ import Slider from "base/slider/slider";
 import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
 import { mapMutations } from "vuex";
+import {playListMixin} from 'common/js/mixin'
 export default {
   data() {
     return {
@@ -48,7 +49,7 @@ export default {
       discList: []
     };
   },
-  mixins: [checkIsLogin],
+  mixins: [checkIsLogin,playListMixin],
   created() {
     this.$nextTick(() => {
       this._getRecommend();
@@ -56,6 +57,15 @@ export default {
     });
   },
   methods: {
+    handlePlaylist(playlist){
+        const bottom = playlist.length>0?'60px':'';
+        const list = this.$refs.recommend;
+        if (list) {
+          list.style.bottom = bottom;
+          // 调用子组件的refresh方法，刷新
+          this.$refs.scroll.refresh();
+        }
+    },
     // 获取推荐
     _getRecommend() {
       getRecommend().then(res => {
