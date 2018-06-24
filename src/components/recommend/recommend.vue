@@ -14,7 +14,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌曲推荐</h1>
           <ul>
-            <li v-for="(item,index) in discList" class="item" :key="index">
+            <li @click="selectItem(item)" v-for="(item,index) in discList" class="item" :key="index">
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.imgurl" alt="">
               </div>
@@ -30,6 +30,7 @@
         <loading></loading>
       </div>
     </scroll>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -66,6 +67,13 @@ export default {
           this.$refs.scroll.refresh();
         }
     },
+    selectItem(item){
+      this.$router.push({
+        path:`/recommend/${item.dissid}`
+      })
+
+      this.setDisc(item)
+    },
     // 获取推荐
     _getRecommend() {
       getRecommend().then(res => {
@@ -87,9 +95,8 @@ export default {
         this.checkloaded = true;
         this.$refs.scroll.refresh();
       }
-      // console.log(this.$refs.scroll)
     },
-    ...mapMutations({ setUser: "SET_USER_STATE" })
+    ...mapMutations({ setUser: "SET_USER_STATE",setDisc:'SET_DISC' })
   },
   components: {
     Slider,
