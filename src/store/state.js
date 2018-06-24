@@ -12,6 +12,8 @@
    sequenceList: [], //顺序列表
    mode: playMode.sequence, //播放模式  默认顺序播放
    currentIndex: -1, //当前播放歌曲索引
+   disc:{},
+   toplist:{}
  }
 
  export default state
