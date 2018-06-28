@@ -49,7 +49,7 @@ export function createSong(musicData){
     })
 }
 
-export function filterSinger(singer){
+function filterSinger(singer){
     if(!singer){
         return ''
     }

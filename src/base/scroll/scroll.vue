@@ -1,6 +1,6 @@
 <template>
   <div ref="wrapper">
-      <slot></slot>
+    <slot></slot>
   </div>
 </template>
 <script>
@@ -22,6 +22,10 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    pullup: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -39,12 +43,21 @@ export default {
         probeType: this.probeType,
         click: this.click
       });
-      if(this.listenScroll){
+      if (this.listenScroll) {
         // 允许监听
-        let me = this
-        this.scroll.on('scroll',(pos)=>{
-          me.$emit('scroll',pos)
-        })
+        let me = this;
+        this.scroll.on("scroll", pos => {
+          me.$emit("scroll", pos);
+        });
+      }
+      if (this.pullup) {
+        // 监听滑动结束
+        this.scroll.on("scrollEnd", () => {
+          // console.log(this.scroll.y,this.scroll.maxScrollY+ 50)
+          if (this.scroll.y <= this.scroll.maxScrollY + 50) {
+              this.$emit('scrollToEnd')
+          }
+        });
       }
     },
     disable() {

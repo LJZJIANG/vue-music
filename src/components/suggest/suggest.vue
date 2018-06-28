@@ -1,7 +1,7 @@
 <template>
-  <scroll class="suggest" :data="result">
+  <scroll class="suggest" :data="result" ref="suggest" :pullup="pullup" @scrollToEnd="searchMore">
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="(item,index) in result">
+      <li @click="selectItem(item)" class="suggest-item" v-for="(item,index) in result">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -9,6 +9,7 @@
           <p class="text" v-html="getDisplayName(item)"></p>
         </div>
       </li>
+      <loading v-show="hasMore" title="拼命加载中"></loading>
     </ul>
   </scroll>
 </template>
@@ -19,8 +20,10 @@ import Loading from "base/loading/loading";
 import { search } from "api/search";
 import { ERR_OK } from "api/config";
 import { createSong, filterSinger } from "common/js/song";
+import Singer from "common/js/singer";
+import { mapMutations, mapActions } from "vuex";
 const TYPE_SINGER = "singer";
-
+const perpage = 20;
 export default {
   props: {
     query: {
@@ -35,10 +38,26 @@ export default {
   data() {
     return {
       page: 1,
-      result: []
+      result: [],
+      hasMore: true,
+      pullup: true
     };
   },
   methods: {
+    selectItem(item) {
+      if (item.type === TYPE_SINGER) {
+        let singer = new Singer({
+          id: item.singermid,
+          name: item.singername
+        });
+        this.$router.push({
+          path: `/search/${singer.id}`
+        });
+        this.setSinger(singer);
+      } else {
+        this.insertSong(item);
+      }
+    },
     getIconCls(item) {
       if (item.type === TYPE_SINGER) {
         return "icon-mine";
@@ -53,11 +72,27 @@ export default {
         return `${item.name}-${item.singer}`;
       }
     },
+    // 下拉加载更多
+    searchMore() {
+      if (!this.hasMore) return;
+      this.page++;
+      search(this.query, this.page, this.showSinger, perpage).then(res => {
+        if (ERR_OK === res.code) {
+          this.result = this.result.concat(this._genResult(res.data));
+          // console.log(this.result);
+          this._checkMore(res.data);
+        }
+      });
+    },
     _search() {
-      search(this.query, this.page, this.showSinger).then(res => {
+      this.page = 1;
+      this.hasMore = true;
+      this.$refs.suggest.scrollTo(0, 0);
+      search(this.query, this.page, this.showSinger, perpage).then(res => {
         if (ERR_OK === res.code) {
           this.result = this._genResult(res.data);
-          console.log(this.result);
+          // console.log(res.data);
+          this._checkMore(res.data);
         }
       });
     },
@@ -78,7 +113,20 @@ export default {
         }
       });
       return ret;
-    }
+    },
+    _checkMore(data) {
+      const song = data.song;
+      if (
+        !song.list.length ||
+        song.curnum + song.curpage * perpage >= song.totalnum
+      ) {
+        this.hasMore = false;
+      }
+    },
+    ...mapMutations({
+      setSinger: "SET_SINGER"
+    }),
+    ...mapActions("insertSong")
   },
   components: {
     Scroll,
