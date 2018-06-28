@@ -29,6 +29,7 @@
     <div class="search-result" v-show="query" ref="searchResult">
       <suggest ref="suggest" :query="query" :showSinger="showSinger"></suggest>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
