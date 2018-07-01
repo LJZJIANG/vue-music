@@ -10,6 +10,8 @@ import SingerDetail from '@/components/singer-detail/singer-detail'
 import Disc from '@/components/disc/disc'
 import TopList from '@/components/top-list/top-list'
 
+import MyButton from '@/components/mybutton/mybutton'
+
 Vue.use(Router)
 
 export default new Router({
@@ -71,6 +73,10 @@ export default new Router({
     {
       path: '*',
       redirect: 'recommend'
+    },{
+      path:'/mybutton',
+      component:MyButton
+
     }
   ]
 })

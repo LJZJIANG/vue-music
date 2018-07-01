@@ -1,7 +1,7 @@
 <template>
   <div class="m-header">
     <div class="icon"></div>
-    <h1 class="text">{{getUser}}</h1>
+    <h1 class="text" @click="jump">{{getUser}}</h1>
   </div>
 </template>
 
@@ -13,6 +13,11 @@
       },
       isLogin(){
         return this.$store.getters.isLogin
+      }
+    },
+    methods:{
+      jump(){
+        this.$router.push('/mybutton')
       }
     }
   }
