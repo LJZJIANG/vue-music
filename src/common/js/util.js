@@ -1,3 +1,4 @@
+
 /**返回随机整数
  * 
  * @param {最小数} min 
@@ -20,4 +21,21 @@ export function shuffle(arr) {
     _arr[j] = t
   }
   return _arr
+}
+
+/**流量节流
+ * 
+ * @param {传入函数} func 
+ * @param {延时} delay 
+ */
+export function debounce(func, delay) {
+  let timer
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this,args)
+    }, delay);
+  }
 }

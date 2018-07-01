@@ -26,6 +26,10 @@ export default {
     pullup: {
       type: Boolean,
       default: false
+    },
+    beforeScroll: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -55,9 +59,14 @@ export default {
         this.scroll.on("scrollEnd", () => {
           // console.log(this.scroll.y,this.scroll.maxScrollY+ 50)
           if (this.scroll.y <= this.scroll.maxScrollY + 50) {
-              this.$emit('scrollToEnd')
+            this.$emit("scrollToEnd");
           }
         });
+      }
+      if (this.beforeScroll) {
+        this.scroll.on('beforeScrollStart',()=>{
+          this.$emit('beforeScroll')
+        })
       }
     },
     disable() {

@@ -1,6 +1,9 @@
  import {
    playMode
- } from 'common/js/config'
+ } from 'common/js/config';
+ import {
+   loadSearch
+ } from 'common/js/cache';
  const state = {
    isLogin: false,
    currentUser: '小火柴',
@@ -12,8 +15,9 @@
    sequenceList: [], //顺序列表
    mode: playMode.sequence, //播放模式  默认顺序播放
    currentIndex: -1, //当前播放歌曲索引
-   disc:{},
-   toplist:{}
+   disc: {},
+   toplist: {},
+   searchHistory:loadSearch()
  }
 
  export default state

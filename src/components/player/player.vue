@@ -69,8 +69,8 @@
           <img :class="cdCls" width="40" height="40" :src="currentSong.image">
         </div>
         <div class="text">
-          <h2 class="name" :v-html="currentSong.name"></h2>
-          <p class="desc" :v-html="currentSong.singer"></p>
+          <h2 class="name">{{currentSong.name}}</h2>
+          <p class="desc" >{{currentSong.singer}}</p>
         </div>
         <div class="control">
           <progress-circle :radius="radius" :percent="percent">

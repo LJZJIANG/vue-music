@@ -1,5 +1,5 @@
 <template>
-  <scroll class="suggest" :data="result" ref="suggest" :pullup="pullup" @scrollToEnd="searchMore">
+  <scroll class="suggest" :data="result" ref="suggest" :pullup="pullup" @scrollToEnd="searchMore" :beforeScroll="beforeScroll" @beforeScroll="listScroll">
     <ul class="suggest-list">
       <li @click="selectItem(item)" class="suggest-item" v-for="(item,index) in result">
         <div class="icon">
@@ -11,12 +11,16 @@
       </li>
       <loading v-show="hasMore" title="拼命加载中"></loading>
     </ul>
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+      <no-result title="抱歉，暂无搜索结果"></no-result>
+    </div>
   </scroll>
 </template>
 
 <script type="text/ecmascript-6">
 import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
+import NoResult from "base/no-result/no-result";
 import { search } from "api/search";
 import { ERR_OK } from "api/config";
 import { createSong, filterSinger } from "common/js/song";
@@ -40,7 +44,8 @@ export default {
       page: 1,
       result: [],
       hasMore: true,
-      pullup: true
+      pullup: true,
+      beforeScroll: true
     };
   },
   methods: {
@@ -57,6 +62,7 @@ export default {
       } else {
         this.insertSong(item);
       }
+      this.$emit('saveSearch',item)
     },
     getIconCls(item) {
       if (item.type === TYPE_SINGER) {
@@ -83,6 +89,12 @@ export default {
           this._checkMore(res.data);
         }
       });
+    },
+    listScroll() {
+      this.$emit("listScroll");
+    },
+    refresh(){
+      this.$refs.suggest.refresh()
     },
     _search() {
       this.page = 1;
@@ -126,11 +138,12 @@ export default {
     ...mapMutations({
       setSinger: "SET_SINGER"
     }),
-    ...mapActions("insertSong")
+    ...mapActions(["insertSong"])
   },
   components: {
     Scroll,
-    Loading
+    Loading,
+    NoResult
   },
   watch: {
     query() {

@@ -3,8 +3,8 @@
     <div class="search-box-wrapper">
       <search-box ref="searchBox" @Query="onQueryChange"></search-box>
     </div>
-    <div class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut">
+    <div class="shortcut-wrapper" v-show="!query" ref="shortcutWrapper">
+      <scroll class="shortcut" ref="shortcut">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -14,7 +14,7 @@
               </li>
             </ul>
           </div>
-          <!-- <div class="search-history" v-show="searchHistory.length">
+          <div class="search-history" v-show="searchHistory.length">
             <h1 class="title">
               <span class="text">搜索历史</span>
               <span @click="showConfirm" class="clear">
@@ -22,28 +22,38 @@
               </span>
             </h1>
             <search-list @delete="deleteSearchHistory" @select="addQuery" :searches="searchHistory"></search-list>
-          </div> -->
+          </div>
         </div>
       </scroll>
     </div>
     <div class="search-result" v-show="query" ref="searchResult">
-      <suggest ref="suggest" :query="query" :showSinger="showSinger"></suggest>
+      <suggest ref="suggest" :query="query" :showSinger="showSinger" @listScroll="inputBlur" @saveSearch="saveSearch"></suggest>
     </div>
+    <confirm ref="confirm" @confirm="removeAllSearch" text="确定要清空所有搜索记录？" confirmBtnText="想好了" cancelBtnText="还是算了"></confirm>
     <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
 import SearchBox from "base/search-box/search-box";
 import Scroll from "base/scroll/scroll";
+import SearchList from "base/search-list/search-list";
+import Confirm from "base/confirm/confirm";
 import Suggest from "components/suggest/suggest";
 import { getHotKey } from "api/search";
+import { playListMixin } from "common/js/mixin";
 import { ERR_OK } from "api/config";
+import { mapGetters, mapActions } from "vuex";
 export default {
+  mixins: [playListMixin],
+  computed: {
+    ...mapGetters(["searchHistory"])
+  },
   data() {
     return {
       hotKey: [],
       query: "",
-      showSinger: true
+      showSinger: true,
+      isShowConfirm: false
     };
   },
   created() {
@@ -52,22 +62,57 @@ export default {
   components: {
     SearchBox,
     Scroll,
-    Suggest
+    Suggest,
+    SearchList,
+    Confirm
   },
   methods: {
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      const shortcutWrapper = this.$refs.shortcutWrapper;
+      const searchResult = this.$refs.searchResult;
+
+      // 在created中也调用了此方法，此时dom还没有加载，所以需要判断是否存在
+      if (shortcutWrapper || searchResult) {
+        shortcutWrapper.style.bottom = bottom;
+        searchResult.style.bottom = bottom;
+      }
+      setTimeout(() => {
+        this.$refs.shortcut.refresh();
+        this.$refs.suggest.refresh();
+      }, 1000);
+    },
     addQuery(query) {
       this.$refs.searchBox.addQuery(query);
     },
     onQueryChange(query) {
       this.query = query;
     },
+    inputBlur() {
+      this.$refs.searchBox.blur();
+    },
+    saveSearch() {
+      this.saveSearchs(this.query); // 加入状态管理中
+    },
+    showConfirm() {
+      this.$refs.confirm.show();
+    },
+    // 删除缓存
+    deleteSearchHistory(item) {
+      this.removeOneHistory(item);
+    },
+    removeAllSearch() {
+      this.removeAllHistory();
+    },
+
     _getHotKey() {
       getHotKey().then(res => {
         if (ERR_OK === res.code) {
           this.hotKey = res.data.hotkey.slice(0, 10);
         }
       });
-    }
+    },
+    ...mapActions(["saveSearchs", "removeOneHistory", "removeAllHistory"])
   }
 };
 </script>

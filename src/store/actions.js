@@ -5,7 +5,9 @@ import {
 import {
   shuffle
 } from 'common/js/util'
-
+import {
+  saveSearch,removeOneSearch,removeAllSearch
+} from 'common/js/cache'
 export const setUser = ({
   commit
 }, data) => {
@@ -26,6 +28,7 @@ export const selectPlay = ({
   list,
   index
 }) => {
+  console.log(state)
   commit(types.SET_SEQUENCE_LIST, list)
   // 如果当前播放模式为随机播放，则打乱播放顺序
   if (state.mode === playMode.random) {
@@ -60,16 +63,16 @@ export const insertSong = ({
   commit,
   state
 }, song) => {
-  let playlist = state.playlist;
-  let sequencelist = state.sequenceList;
+  let playlist = state.playlist.slice();
+  let sequencelist = state.sequenceList.slice();
   let currentIndex = state.currentIndex;
   // 记录当前播放的歌曲
   let currentSong = playlist[currentIndex]
 
   let fpindex = findIndex(playlist, song);
   // 往歌曲列表中插入歌曲
-  playlist.splice(currentIndex, 0, song);
   currentIndex++
+  playlist.splice(currentIndex, 0, song);
   if (fpindex > -1) {
     //   删除playlist中相同的song
     //   如果插入歌曲的位置
@@ -95,9 +98,24 @@ export const insertSong = ({
       playlist.splice(fsIndex + 1, 1); // [1,->2,2,3,4,5]
     }
   }
-  commit(types.SET_PLAY_LIST, song)
-  commit(types.SET_SEQUENCE_LIST, song)
+  commit(types.SET_PLAY_LIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequencelist)
   commit(types.SET_CURRENT_INDEX, currentIndex) // 记录当前播放歌曲索引
   commit(types.SET_PALYING_STATE, true) //改变播放状态
   commit(types.SET_FULL_SCREEN, true) // 设置全屏 
+}
+
+export const saveSearchs = ({
+  commit
+}, searchs) => {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(searchs))
+}
+
+// 删除某个缓存
+
+export const removeOneHistory = ({commit},query)=>{
+  commit(types.SET_SEARCH_HISTORY,removeOneSearch(query))
+}
+export const removeAllHistory = ({commit})=>{
+  commit(types.SET_SEARCH_HISTORY,removeAllSearch())
 }
