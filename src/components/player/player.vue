@@ -70,7 +70,7 @@
         </div>
         <div class="text">
           <h2 class="name">{{currentSong.name}}</h2>
-          <p class="desc" >{{currentSong.singer}}</p>
+          <p class="desc">{{currentSong.singer}}</p>
         </div>
         <div class="control">
           <progress-circle :radius="radius" :percent="percent">
@@ -78,12 +78,12 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <!-- <playlist ref="playlist"></playlist>-->
+    <playlist ref="playlist"></playlist>
     <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
@@ -96,6 +96,7 @@ import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
 import ProgressBar from "base/progress-bar/progress-bar";
 import ProgressCircle from "base/progress-circle/progress-circle";
+import Playlist from "components/playlist/playlist";
 import Scroll from "base/scroll/scroll";
 import Lyric from "lyric-parser";
 
@@ -150,6 +151,9 @@ export default {
     this.touch = {};
   },
   methods: {
+    showPlaylist() {
+      this.$refs.playlist.show();
+    },
     // 关闭全屏
     back() {
       this.setFullScreen(false);
@@ -231,7 +235,9 @@ export default {
         Math.max(-window.innerWidth, left + deltaX)
       );
       this.touch.percent = Math.abs(offsetWidth / window.innerWidth);
-      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px,0,0)`;
+      this.$refs.lyricList.$el.style[
+        transform
+      ] = `translate3d(${offsetWidth}px,0,0)`;
       this.$refs.lyricList.$el.style[transitionDuration] = 0;
       this.$refs.middleL.style.opacity = 1 - this.touch.percent;
       this.$refs.middleL.style[transitionDuration] = 0;
@@ -411,7 +417,8 @@ export default {
   components: {
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    Playlist
   },
   watch: {
     currentSong(newsong, oldsong) {
