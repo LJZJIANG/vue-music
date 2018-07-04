@@ -28,7 +28,6 @@ export const selectPlay = ({
   list,
   index
 }) => {
-  console.log(state)
   commit(types.SET_SEQUENCE_LIST, list)
   // 如果当前播放模式为随机播放，则打乱播放顺序
   if (state.mode === playMode.random) {
