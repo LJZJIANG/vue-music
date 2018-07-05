@@ -4,9 +4,9 @@
       <div class="list-wrapper" @click.stop>
         <div class="list-header">
           <h1 class="title">
-            <i class="icon"></i>
-            <span class="text"></span>
-            <span class="clear">
+            <i class="icon" :class="iconMode" @click="changePlayMode"></i>
+            <span class="text">{{playModeText}}</span>
+            <span class="clear" @click.stop="showConfirm">
               <i class="icon-clear"></i>
             </span>
           </h1>
@@ -35,31 +35,35 @@
           <span>关闭</span>
         </div>
       </div>
-      <!-- <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
-      <add-song ref="addSong"></add-song> -->
+      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+      <!-- <add-song ref="addSong"></add-song> -->
     </div>
   </transition>
 </template>
 <script>
 import Scroll from "base/scroll/scroll";
-import { mapGetters, mapMutations } from "vuex";
+import Confirm from "base/confirm/confirm";
+import { mapGetters, mapActions } from "vuex";
 import { playMode } from "common/js/config";
+import { playerMixin } from "common/js/mixin";
 export default {
+  mixins: [playerMixin],
   data() {
     return {
       showFlag: false
     };
   },
   computed: {
-    ...mapGetters([
-      "sequenceList",
-      "playlist",
-      "mode",
-      "currentSong",
-      "playing"
-    ])
+    playModeText() {
+      return this.mode === playMode.sequence
+        ? "顺序播放"
+        : this.mode === playMode.random ? "随机播放" : "单曲循环";
+    }
   },
   methods: {
+    showConfirm() {
+      this.$refs.confirm.show();
+    },
     show() {
       this.showFlag = true;
       this.$nextTick(() => {
@@ -95,14 +99,21 @@ export default {
       });
       this.$refs.listContent.scrollToElement(this.$refs.songItem[index]);
     },
-    deleteOne(item) {},
-    ...mapMutations({
-      setPlayingState: "SET_PALYING_STATE",
-      setCurrentIndex: "SET_CURRENT_INDEX"
-    })
+    deleteOne(item) {
+      this.deleteOneSong(item);
+      if (!this.playlist.length) {
+        this.hide();
+      }
+    },
+    // 清空所有
+    confirmClear() {
+      this.deleteAllSong();
+    },
+    ...mapActions(["deleteOneSong", "deleteAllSong"])
   },
   components: {
-    Scroll
+    Scroll,
+    Confirm
   }
 };
 </script>

@@ -1,6 +1,11 @@
 import {
-  mapGetters
+  mapGetters,
+  mapMutations
 } from 'vuex'
+import {
+  playMode
+} from "common/js/config";
+import { shuffle } from "common/js/util";
 export const playListMixin = {
   computed: {
     ...mapGetters(['playlist'])
@@ -14,14 +19,14 @@ export const playListMixin = {
     this.handlePlaylist(this.playlist)
   },
   watch: {
-      playlist(newVal){
-          this.handlePlaylist(this.playlist)
-      }
+    playlist(newVal) {
+      this.handlePlaylist(this.playlist)
+    }
   },
   methods: {
     handlePlaylist() {
-        throw new Error('组件中必须声明handlePlaylist方法')
-        
+      throw new Error('组件中必须声明handlePlaylist方法')
+
     }
   }
 }
@@ -37,4 +42,52 @@ export const checkIsLogin = {
       this.$router.push('recommend');
     }
   }
+}
+
+export const playerMixin = {
+  computed: {
+    iconMode() {
+      return this.mode === playMode.sequence ?
+        "icon-sequence" :
+        this.mode === playMode.loop ? "icon-loop" : "icon-random";
+    },
+    ...mapGetters([
+      "sequenceList",
+      "playlist",
+      "mode",
+      "currentSong",
+      "playing"
+    ])
+  },
+  methods: {
+    // 切换播放模式
+    changePlayMode() {
+      const mode = (this.mode + 1) % 3;
+      this.setPlayMode(mode);
+      let list = null;
+      if (mode === playMode.random) {
+        // 随机播放
+        list = shuffle(this.sequenceList);
+      } else {
+        // 顺序播放
+        list = this.sequenceList;
+      }
+      this.resetCurrentIndex(list);
+      this.setPlayList(list);
+    },
+    resetCurrentIndex(list) {
+      // 获取相同id的第一个元素的索引
+      let index = list.findIndex(item => {
+        return item.id === this.currentSong.id;
+      });
+      this.setCurrentIndex(index);
+    },
+    ...mapMutations({
+      setCurrentIndex: "SET_CURRENT_INDEX",
+      setPlayMode: "SET_MODE",
+      setPlayList: "SET_PLAY_LIST",
+      setPlayingState: "SET_PALYING_STATE"
+    })
+  }
+
 }
