@@ -6,7 +6,9 @@ import {
   shuffle
 } from 'common/js/util'
 import {
-  saveSearch,removeOneSearch,removeAllSearch
+  saveSearch,
+  removeOneSearch,
+  removeAllSearch
 } from 'common/js/cache'
 export const setUser = ({
   commit
@@ -112,9 +114,45 @@ export const saveSearchs = ({
 
 // 删除某个缓存
 
-export const removeOneHistory = ({commit},query)=>{
-  commit(types.SET_SEARCH_HISTORY,removeOneSearch(query))
+export const removeOneHistory = ({
+  commit
+}, query) => {
+  commit(types.SET_SEARCH_HISTORY, removeOneSearch(query))
 }
-export const removeAllHistory = ({commit})=>{
-  commit(types.SET_SEARCH_HISTORY,removeAllSearch())
+export const removeAllHistory = ({
+  commit
+}) => {
+  commit(types.SET_SEARCH_HISTORY, removeAllSearch())
+}
+
+// 删除播放列表中一首歌
+export const deleteOneSong = ({
+  commit,
+  state
+}, song) => {
+  let playlist = state.playlist.slice();
+  let sequencelist = state.sequenceList.slice()
+  let currentindex = state.currentIndex;
+  const pIndex = findIndex(playlist, song)
+  const sIndex = findIndex(sequencelist, song);
+  playlist.splice(pIndex, 1);
+  sequencelist.splice(sIndex, 1)
+
+  if (sIndex < currentindex || currentindex === playlist.length) {
+    currentindex--
+  }
+ 
+  const playstate = playlist.length>0
+  commit(types.SET_PALYING_STATE, playstate)
+  commit(types.SET_PLAY_LIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequencelist)
+  commit(types.SET_CURRENT_INDEX, currentindex)
+}
+
+// 删除所有歌曲
+export const deleteAllSong = ({commit})=>{
+  commit(types.SET_PALYING_STATE, false)
+  commit(types.SET_PLAY_LIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_CURRENT_INDEX, -1)
 }

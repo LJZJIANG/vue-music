@@ -56,7 +56,6 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
-
   .confirm
     position: fixed
     left: 0
