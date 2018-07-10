@@ -8,7 +8,8 @@ import {
 import {
   saveSearch,
   removeOneSearch,
-  removeAllSearch
+  removeAllSearch,
+  savePlayHistory
 } from 'common/js/cache'
 export const setUser = ({
   commit
@@ -141,8 +142,8 @@ export const deleteOneSong = ({
   if (sIndex < currentindex || currentindex === playlist.length) {
     currentindex--
   }
- 
-  const playstate = playlist.length>0
+
+  const playstate = playlist.length > 0
   commit(types.SET_PALYING_STATE, playstate)
   commit(types.SET_PLAY_LIST, playlist)
   commit(types.SET_SEQUENCE_LIST, sequencelist)
@@ -150,9 +151,17 @@ export const deleteOneSong = ({
 }
 
 // 删除所有歌曲
-export const deleteAllSong = ({commit})=>{
+export const deleteAllSong = ({
+  commit
+}) => {
   commit(types.SET_PALYING_STATE, false)
   commit(types.SET_PLAY_LIST, [])
   commit(types.SET_SEQUENCE_LIST, [])
   commit(types.SET_CURRENT_INDEX, -1)
+}
+
+export const savePlay = ({
+  commit
+}, song) => {
+  commit(types.SET_PLAY_HISTORY, savePlayHistory(song))
 }

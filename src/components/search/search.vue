@@ -40,18 +40,15 @@ import SearchList from "base/search-list/search-list";
 import Confirm from "base/confirm/confirm";
 import Suggest from "components/suggest/suggest";
 import { getHotKey } from "api/search";
-import { playListMixin } from "common/js/mixin";
+import { playListMixin,playMixin } from "common/js/mixin";
 import { ERR_OK } from "api/config";
-import { mapGetters, mapActions } from "vuex";
+import {mapActions } from "vuex";
 export default {
-  mixins: [playListMixin],
-  computed: {
-    ...mapGetters(["searchHistory"])
-  },
+  mixins: [playListMixin,playMixin],
+  
   data() {
     return {
       hotKey: [],
-      query: "",
       showSinger: true,
       isShowConfirm: false
     };
@@ -82,25 +79,11 @@ export default {
         this.$refs.suggest.refresh();
       }, 1000);
     },
-    addQuery(query) {
-      this.$refs.searchBox.addQuery(query);
-    },
-    onQueryChange(query) {
-      this.query = query;
-    },
-    inputBlur() {
-      this.$refs.searchBox.blur();
-    },
-    saveSearch() {
-      this.saveSearchs(this.query); // 加入状态管理中
-    },
+    
     showConfirm() {
       this.$refs.confirm.show();
     },
-    // 删除缓存
-    deleteSearchHistory(item) {
-      this.removeOneHistory(item);
-    },
+   
     removeAllSearch() {
       this.removeAllHistory();
     },
@@ -112,7 +95,7 @@ export default {
         }
       });
     },
-    ...mapActions(["saveSearchs", "removeOneHistory", "removeAllHistory"])
+    ...mapActions(["removeAllHistory"])
   }
 };
 </script>
