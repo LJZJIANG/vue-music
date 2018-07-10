@@ -1,11 +1,14 @@
 import {
   mapGetters,
-  mapMutations
+  mapMutations,
+  mapActions
 } from 'vuex'
 import {
   playMode
 } from "common/js/config";
-import { shuffle } from "common/js/util";
+import {
+  shuffle
+} from "common/js/util";
 export const playListMixin = {
   computed: {
     ...mapGetters(['playlist'])
@@ -90,4 +93,35 @@ export const playerMixin = {
     })
   }
 
+}
+
+
+export const playMixin = {
+  data() {
+    return {
+      query: ''
+    }
+  },
+  computed: {
+    ...mapGetters(["searchHistory"])
+  },
+  methods: {
+    addQuery(query) {
+      this.$refs.searchBox.addQuery(query);
+    },
+    onQueryChange(query) {
+      this.query = query;
+    },
+    inputBlur() {
+      this.$refs.searchBox.blur();
+    },
+    saveSearch() {
+      this.saveSearchs(this.query); // 加入状态管理中
+    },
+    // 删除缓存
+    deleteSearchHistory(item) {
+      this.removeOneHistory(item);
+    },
+    ...mapActions(["saveSearchs", "removeOneHistory"])
+  }
 }

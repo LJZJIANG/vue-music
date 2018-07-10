@@ -89,12 +89,12 @@
 </template>
 
 <script>
-import { mapGetters,mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import animations from "create-keyframe-animation";
 import { prefixStyle } from "common/js/dom";
 import { playMode } from "common/js/config";
 import { shuffle } from "common/js/util";
-import {playerMixin} from 'common/js/mixin'
+import { playerMixin } from "common/js/mixin";
 import ProgressBar from "base/progress-bar/progress-bar";
 import ProgressCircle from "base/progress-circle/progress-circle";
 import Playlist from "components/playlist/playlist";
@@ -105,7 +105,7 @@ const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
 
 export default {
-  mixins:[playerMixin],
+  mixins: [playerMixin],
   data() {
     return {
       songReady: false,
@@ -139,10 +139,7 @@ export default {
     percent() {
       return this.currentTime / this.currentSong.duration;
     },
-    ...mapGetters([
-      "fullScreen",
-      "currentIndex"
-    ])
+    ...mapGetters(["fullScreen", "currentIndex"])
   },
   created() {
     this.touch = {};
@@ -330,6 +327,7 @@ export default {
     // 音频准备就绪
     ready() {
       this.songReady = true;
+      this.savePlay(this.currentSong);
     },
     // 音频资源出错、网错错误等回调
     error() {
@@ -383,7 +381,8 @@ export default {
     },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN"
-    })
+    }),
+    ...mapActions(["savePlay"])
   },
   components: {
     ProgressBar,
