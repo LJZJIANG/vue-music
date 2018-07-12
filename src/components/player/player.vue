@@ -165,14 +165,14 @@ export default {
       }
     },
     getLyric() {
-      this.currentSong.getLyric().then(lyric => {
+      /* this.currentSong.getLyric().then(lyric => {
         if (this.currentSong.lyric != lyric) return;
         this.currentLyric = new Lyric(lyric, this.handleLyric);
         // console.log(this.currentLyric);
         if (this.playing) {
           this.currentLyric.play();
         }
-      });
+      }); */
     },
     handleLyric({ lineNum, txt }) {
       this.currentLineNum = lineNum;

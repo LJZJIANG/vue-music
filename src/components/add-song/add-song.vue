@@ -15,11 +15,11 @@
         <div class="list-wrapper">
           <scroll ref="songList" v-if="currentIndex===0" class="list-scroll" :data="playHistory">
             <div class="list-inner">
-              <song-list :songs="playHistory">
+              <song-list :songs="playHistory" @selectItem="selectSong">
               </song-list>
             </div>
           </scroll>
-          <scroll ref="searchList" v-if="currentIndex===1" class="list-scroll" :data="searchHistory">
+          <scroll ref="searchList" v-if="currentIndex===1" class="list-scroll" :data="searchHistory" :refreshDelay="refreshDelay">
             <div class="list-inner">
               <search-list @delete="deleteSearchHistory" @select="addQuery" :searches="searchHistory"></search-list>
             </div>
@@ -27,14 +27,14 @@
         </div>
       </div>
       <div class="search-result" v-show="query">
-        <suggest ref="suggest" :query="query" :showSinger="showSinger" @listScroll="inputBlur" @saveSearch="saveSearch"></suggest>
+        <suggest ref="suggest" :query="query" :showSinger="showSinger" @hidePage="hidePage" @listScroll="inputBlur" @saveSearch="selectSuggest"></suggest>
       </div>
-      <!--<top-tip ref="topTip">
+      <top-tip ref="topTip">
         <div class="tip-title">
           <i class="icon-ok"></i>
           <span class="text">1首歌曲已经添加到播放列表</span>
         </div>
-      </top-tip> -->
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -44,10 +44,11 @@ import SearchBox from "base/search-box/search-box";
 import Switches from "base/switches/switches";
 import Suggest from "components/suggest/suggest";
 import { playMixin } from "common/js/mixin";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import Scroll from "base/scroll/scroll";
 import SongList from "base/song-list/song-list";
 import SearchList from "base/search-list/search-list";
+import TopTip from "base/top-tip/top-tip";
 export default {
   mixins: [playMixin],
   data() {
@@ -72,12 +73,31 @@ export default {
         }
       }, 20);
     },
+    hidePage() {
+      // this.hide();
+      // this.$emit('hide')
+    },
     hide() {
       this.showFlag = false;
     },
     selectItem(index) {
       this.currentIndex = index;
-    }
+    },
+    selectSuggest() {
+      this.saveSearch();
+      this.showTip();
+    },
+    selectSong(item, index) {
+      if (index !== 0) {
+        this.insertSong(item);
+        this.hidePage();
+        this.showTip();
+      }
+    },
+    showTip() {
+      this.$refs.topTip.show();
+    },
+    ...mapActions(["insertSong"])
   },
   components: {
     SearchBox,
@@ -85,7 +105,8 @@ export default {
     Switches,
     Scroll,
     SongList,
-    SearchList
+    SearchList,
+    TopTip
   }
 };
 </script>

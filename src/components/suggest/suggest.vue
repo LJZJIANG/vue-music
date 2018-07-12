@@ -62,7 +62,8 @@ export default {
       } else {
         this.insertSong(item);
       }
-      this.$emit('saveSearch',item)
+      this.$emit('saveSearch',item);
+      this.$emit('hidePage')
     },
     getIconCls(item) {
       if (item.type === TYPE_SINGER) {

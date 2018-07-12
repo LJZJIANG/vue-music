@@ -1,10 +1,10 @@
 <template>
   <div class="search">
     <div class="search-box-wrapper">
-      <search-box ref="searchBox" @Query="onQueryChange"></search-box>
+      <search-box ref="searchBox" @Query="onQueryChange" @refreshScroll="refreshScroll"></search-box>
     </div>
     <div class="shortcut-wrapper" v-show="!query" ref="shortcutWrapper">
-      <scroll class="shortcut" ref="shortcut">
+      <scroll class="shortcut" ref="shortcut" :refreshDelay="refreshDelay">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -79,7 +79,11 @@ export default {
         this.$refs.suggest.refresh();
       }, 1000);
     },
-    
+    refreshScroll(){
+      setTimeout(() => {
+        this.$refs.shortcut.refresh();
+      }, 1000);
+    },
     showConfirm() {
       this.$refs.confirm.show();
     },
