@@ -11,9 +11,9 @@
             </span>
           </h1>
         </div>
-        <scroll ref="listContent" :data="sequenceList" class="list-content">
+        <scroll ref="listContent" :refreshDelay="refreshDelay" :data="sequenceList" class="list-content">
           <transition-group ref="list" name="list" tag="ul">
-            <li ref="songItem" :key="item.id" class="item" v-for="(item,index) in sequenceList" @click="selectItem(item,index)">
+            <li ref="songItem" :key="item.mid" class="item" v-for="(item,index) in sequenceList" @click="selectItem(item,index)">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
               <span class="like">
@@ -36,14 +36,14 @@
         </div>
       </div>
       <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
-      <addsong ref="addsong"></addsong>
+      <addsong ref="addsong" @hide="hidePlayList"></addsong>
     </div>
   </transition>
 </template>
 <script>
 import Scroll from "base/scroll/scroll";
 import Confirm from "base/confirm/confirm";
-import Addsong from 'components/add-song/add-song'
+import Addsong from "components/add-song/add-song";
 import { mapGetters, mapActions } from "vuex";
 import { playMode } from "common/js/config";
 import { playerMixin } from "common/js/mixin";
@@ -51,7 +51,8 @@ export default {
   mixins: [playerMixin],
   data() {
     return {
-      showFlag: false
+      showFlag: false,
+      refreshDelay:100
     };
   },
   computed: {
@@ -62,8 +63,8 @@ export default {
     }
   },
   methods: {
-    addsong(){
-      this.$refs.addsong.show()
+    addsong() {
+      this.$refs.addsong.show();
     },
     showConfirm() {
       this.$refs.confirm.show();
@@ -77,6 +78,9 @@ export default {
     },
     hide() {
       this.showFlag = false;
+    },
+    hidePlayList() {
+      this.hide();
     },
     selectItem(item, index) {
       if (this.mode === playMode.random) {
