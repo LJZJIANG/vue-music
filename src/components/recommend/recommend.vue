@@ -196,7 +196,7 @@ export default {
 
   .tip-container {
     position: fixed;
-    top: 0;
+    top: 400px;
     left: 0;
     width: 100%;
     text-align: center;

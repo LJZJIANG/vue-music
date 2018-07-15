@@ -1,12 +1,13 @@
 <template>
   <div id="app">
-    <m-header></m-header>
+    <m-header @showPop="showPop"></m-header>
     <tab></tab>
     <!-- 将页面存入缓存，页面返回时，不在请求数据 -->
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
     <player></player>
+    <pop ref="pop"></pop>
   </div>
 </template>
 
@@ -14,13 +15,15 @@
 var _this;
 import MHeader from "components/mHeader/mHeader";
 import Tab from "components/tab/tab";
-import Player from 'components/player/player'
+import Player from "components/player/player";
+import Pop from "base/pop/pop";
 export default {
   name: "App",
   components: {
     MHeader,
     Tab,
-    Player
+    Player,
+    Pop
   },
   created() {
     _this = this;
@@ -68,10 +71,14 @@ export default {
           break;
       }
     });
+  },
+  methods: {
+    showPop() {
+      this.$refs.pop.show();
+    }
   }
 };
 </script>
 
 <style>
-
 </style>
