@@ -56,8 +56,8 @@
             <div class="icon i-right" :class="disableCls">
               <i @click="next" class="icon-next"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon"></i>
+            <div class="icon i-right" @click.stop="toggleFavorite(currentSong)">
+              <i class="icon" :class="getFavoriteIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -165,14 +165,14 @@ export default {
       }
     },
     getLyric() {
-      /* this.currentSong.getLyric().then(lyric => {
+      this.currentSong.getLyric().then(lyric => {
         if (this.currentSong.lyric != lyric) return;
         this.currentLyric = new Lyric(lyric, this.handleLyric);
         // console.log(this.currentLyric);
         if (this.playing) {
           this.currentLyric.play();
         }
-      }); */
+      });
     },
     handleLyric({ lineNum, txt }) {
       this.currentLineNum = lineNum;
@@ -299,30 +299,48 @@ export default {
       if (!this.songReady) return;
       // 将进度条进度归零
       this.currentTime = 0;
-      let index = this.currentIndex + 1;
-      if (index === this.playlist.length) {
-        index = 0;
+      if (this.playlist.length === 1) {
+        this.loop();
+        return;
+      } else {
+        let index = this.currentIndex + 1;
+        if (index === this.playlist.length) {
+          index = 0;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing) {
+          this.togglePlaying();
+        }
+        this.songReady = false;
       }
-      this.setCurrentIndex(index);
-      if (!this.playing) {
-        this.togglePlaying();
-      }
-      this.songReady = false;
     },
     // 上一首
     prev() {
       if (!this.songReady) return;
       // 将进度条进度归零
       this.currentTime = 0;
-      let index = this.currentIndex - 1;
-      if (index === -1) {
-        index = this.playlist.length - 1;
+      if (this.playlist.length === 1) {
+        this.loop();
+        return;
+      } else {
+        let index = this.currentIndex - 1;
+        if (index === -1) {
+          index = this.playlist.length - 1;
+        }
+        this.setCurrentIndex(index);
+        if (!this.playing) {
+          this.togglePlaying();
+        }
+        this.songReady = false;
       }
-      this.setCurrentIndex(index);
-      if (!this.playing) {
-        this.togglePlaying();
+    },
+    loop() {
+      this.$refs.audio.currentTime = 0;
+      this.$refs.audio.play();
+      this.setPlayingState(true);
+      if (this.currentLyric) {
+        this.currentLyric.seek(0);
       }
-      this.songReady = false;
     },
     // 音频准备就绪
     ready() {

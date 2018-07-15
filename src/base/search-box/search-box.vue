@@ -24,6 +24,7 @@ export default {
   methods: {
     clear() {
       this.query = "";
+      this.$emit('refreshScroll')
     },
     addQuery(query) {
       this.query = query;

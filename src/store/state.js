@@ -3,7 +3,8 @@
  } from 'common/js/config';
  import {
    loadSearch,
-   loadPlayHistory
+   loadPlayHistory,
+   loadFavoriteList
  } from 'common/js/cache';
  const state = {
    isLogin: false,
@@ -19,7 +20,8 @@
    disc: {},
    toplist: {},
    searchHistory: loadSearch(),
-   playHistory: loadPlayHistory()
+   playHistory: loadPlayHistory(),
+   favoriteList: loadFavoriteList()
  }
 
  export default state

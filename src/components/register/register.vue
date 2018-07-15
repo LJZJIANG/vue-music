@@ -1,46 +1,58 @@
 <template>
-  <div id="login">
-      <div class="container">
-        <div class="logo-wrapper">
-            <img src="../../common/image/default.png" alt="" srcset="" class="logo">
+    <div id="login">
+        <div class="container">
+            <div class="logo-wrapper">
+                <img src="../../common/image/default.png" alt="" srcset="" class="logo">
+            </div>
+            <div class="main">
+                <div class="username-box">
+                    <img class="icon icon-user" src="../../common/image/user.png">
+                    <input type="text" placeholder="请输入用户名" v-model="username" @blur.lazy="isExist()">
+                    <img class="icon icon-del" src="../../common/image/del.png" v-show="username.length" @click="clearUserName">
+                </div>
+                <p class="is-exist" v-show="Isexist" ref="username">用户名已存在</p>
+                <div class="password-box">
+                    <img class="icon icon-password" src="../../common/image/password.png">
+                    <input type="password" placeholder="请输入密码" v-model="password">
+                    <img class="icon icon-del" v-show="password.length" @click="clearPassWord" src="../../common/image/del.png">
+                </div>
+                <div class="password-box">
+                    <img class="icon icon-password" src="../../common/image/password.png">
+                    <input type="password" placeholder="请输入确认密码" v-model="comfirmPassword">
+                    <img class="icon icon-del" v-show="comfirmPassword.length" @click="clearComfirmPassWord" src="../../common/image/del.png">
+                </div>
+                <div class="login-box" @click="register">
+                    注 册
+                </div>
+                <div class="info">
+                    <router-link class="register" to="login">已有账号，直接登录</router-link>
+                </div>
+            </div>
         </div>
-        <div class="main">
-            <div class="username-box">
-                 <img class="icon icon-user" src="../../common/image/user.png">
-                <input type="text" placeholder="请输入用户名" v-model="username" @blur.lazy="isExist()">
-                <img class="icon icon-del"  src="../../common/image/del.png" v-show="username.length" @click="clearUserName">
-            </div>
-            <p class="is-exist" v-show="Isexist" ref="username">用户名已存在</p>
-            <div class="password-box">
-                <img class="icon icon-password" src="../../common/image/password.png">
-                <input type="password" placeholder="请输入密码" v-model="password">
-                <img class="icon icon-del" v-show="password.length"  @click="clearPassWord"  src="../../common/image/del.png">
-            </div>
-            <div class="password-box">
-                <img class="icon icon-password" src="../../common/image/password.png">
-                <input type="password" placeholder="请输入确认密码" v-model="comfirmPassword">
-                 <img class="icon icon-del" v-show="comfirmPassword.length"  @click="clearComfirmPassWord"  src="../../common/image/del.png">
-            </div>
-            <div class="login-box" @click="register">
-                注 册
-            </div>
-            <div class="info">
-                <router-link class="register" to="login">已有账号，直接登录</router-link>
-            </div>
+        <div class="tip-container">
+            <top-tip ref="topTip">
+                <div class="tip-title">
+                    <span class="text" v-text="info"></span>
+                </div>
+            </top-tip>
         </div>
     </div>
-  </div>
 </template>
 <script>
 import { addClass } from "../../common/js/dom";
+import TopTip from "base/top-tip/top-tip";
 export default {
   data() {
     return {
       username: "",
       password: "",
       comfirmPassword: "",
-      Isexist: false
+      Isexist: false,
+      info: ""
     };
+  },
+  components: {
+    TopTip
   },
   methods: {
     register() {
@@ -48,15 +60,18 @@ export default {
       let password = this.password;
       let comfirmPassword = this.comfirmPassword;
       if (!username) {
-        alert("用户名不能为空");
+        this.info = "用户名不能为空";
+        this.$refs.topTip.show();
         return;
       }
       if (!password) {
-        alert("密码不能为空");
+        this.info = "密码不能为空";
+        this.$refs.topTip.show();
         return;
       }
       if (password != comfirmPassword) {
-        alert("密码和确认密码不相等");
+        this.info = "密码和确认密码不相等";
+        this.$refs.topTip.show();
         return;
       }
 
@@ -65,15 +80,16 @@ export default {
         password: this.password,
         comfirmPassword: this.comfirmPassword
       };
-      console.log(formData)
+      console.log(formData);
       if (!this.Isexist) {
         this.$axios
           .post(this.$baseURL + "musicAppUsers.json", formData)
           .then(res => {
-              console.log(res)
+            console.log(res);
             if (res.status == 200) {
-              this.username = "";
-              this.password = "";
+              this.clearUserName();
+              this.clearPassWord();
+              this.clearComfirmPassWord();
               // 注册成功，跳转登录页面
               this.$router.push("/login");
             }
@@ -228,6 +244,17 @@ export default {
                 text-decoration: underline;
             }
         }
+    }
+
+    .tip-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+        height: 50px;
+        line-height: 50px;
     }
 }
 </style>

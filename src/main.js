@@ -11,7 +11,8 @@ import axios from 'axios'
 import store from './store'
 
 import './common/stylus/index.styl'
-
+// 用于移动端调试
+// import Vconsole from 'vconsole'
 fastclick.attach(document.body)
 
 Vue.prototype.$axios = axios;

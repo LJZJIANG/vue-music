@@ -2,8 +2,10 @@ import storage from 'good-storage'
 
 const SEARCH_KEY = '__search__';
 const PLAY_HISTORY_KEY = '__playhisrory__'
+const FAVORITE_LIST_KEY = '__favoritelist__'
 const SEARCH_MAX_LENGTH = 15; //最多缓存的搜索记录数
 const PLAY_HISTORY_MAX_LENTH = 200;
+const FAVORITE_LIST_MAX_LENTH = 200;
 
 /**
  * 
@@ -27,6 +29,13 @@ function insertArray(arr, val, compare, maxlen) {
   }
 }
 
+function deleteFromArray(arr, compare) {
+  let index = arr.findIndex(compare);
+  if (index > -1) {
+    arr.splice(index, 1)
+  }
+}
+
 export function saveSearch(query) {
   let searchs = storage.get(SEARCH_KEY, []);
   // 添加缓存
@@ -45,13 +54,9 @@ export function loadSearch() {
 
 export function removeOneSearch(query) {
   let searchs = storage.get(SEARCH_KEY, []);
-  const index = searchs.findIndex((item) => {
+  deleteFromArray(searchs, (item) => {
     return item === query
-  });
-  
-  if (index > -1) {
-    searchs.splice(index, 1)
-  }
+  })
   storage.set(SEARCH_KEY, searchs)
   return searchs;
 }
@@ -73,4 +78,27 @@ export function savePlayHistory(history) {
 
 export function loadPlayHistory() {
   return storage.get(PLAY_HISTORY_KEY, []);
+}
+
+/* 收藏歌曲 */
+export function saveFavoriteList(song) {
+  let favoriteList = storage.get(FAVORITE_LIST_KEY, []);
+  insertArray(favoriteList, song, (item) => {
+    return favoriteList.id === item.id
+  }, FAVORITE_LIST_MAX_LENTH)
+  storage.set(FAVORITE_LIST_KEY, favoriteList)
+  return favoriteList
+}
+
+export function removeFavoriteList(song) {
+  let favoriteList = storage.get(FAVORITE_LIST_KEY, []);
+  deleteFromArray(favoriteList, (item) => {
+    return item.id === song.id
+  })
+  storage.set(FAVORITE_LIST_KEY, favoriteList)
+  return favoriteList;
+}
+
+export function loadFavoriteList() {
+  return storage.get(FAVORITE_LIST_KEY, []);
 }

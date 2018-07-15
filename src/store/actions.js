@@ -9,7 +9,9 @@ import {
   saveSearch,
   removeOneSearch,
   removeAllSearch,
-  savePlayHistory
+  savePlayHistory,
+  saveFavoriteList,
+  removeFavoriteList
 } from 'common/js/cache'
 export const setUser = ({
   commit
@@ -164,4 +166,13 @@ export const savePlay = ({
   commit
 }, song) => {
   commit(types.SET_PLAY_HISTORY, savePlayHistory(song))
+}
+
+
+export const saveForvorite = ({commit},song)=>{
+  commit(types.SET_FAVORITE_LIST,saveFavoriteList(song))
+}
+
+export const deleteForvorite = ({commit},song)=>{
+  commit(types.SET_FAVORITE_LIST,removeFavoriteList(song))
 }

@@ -16,8 +16,8 @@
             <li ref="songItem" :key="item.mid" class="item" v-for="(item,index) in sequenceList" @click="selectItem(item,index)">
               <i class="current" :class="getCurrentIcon(item)"></i>
               <span class="text">{{item.name}}</span>
-              <span class="like">
-                <i></i>
+              <span class="like" @click.stop="toggleFavorite(item)">
+                <i class="icon" :class="getFavoriteIcon(item)"></i>
               </span>
               <span @click.stop="deleteOne(item)" class="delete">
                 <i class="icon-delete"></i>
@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       showFlag: false,
-      refreshDelay:100
+      refreshDelay: 100
     };
   },
   computed: {
