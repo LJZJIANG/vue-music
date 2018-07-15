@@ -1,3 +1,4 @@
+import storage from 'good-storage'
 import {
   mapGetters,
   mapMutations,
@@ -9,6 +10,10 @@ import {
 import {
   shuffle
 } from "common/js/util";
+
+const IS_AUTO_LOGIN = '__autoLogin__'
+const USER_NAME = '__username__'
+
 export const playListMixin = {
   computed: {
     ...mapGetters(['playlist'])
@@ -34,15 +39,26 @@ export const playListMixin = {
   }
 }
 
-export const checkIsLogin = {
+export const checkAutoLogin = {
   mounted() {
-    let autoLogin = localStorage.getItem('autoLogin');
-    if (autoLogin) {
+    // let autoLogin = localStorage.getItem('autoLogin');
+    let autoLogin = storage.get(IS_AUTO_LOGIN, [])
+    if (autoLogin && autoLogin === true) {
       // this.$store.dispatch('setUser',localStorage.getItem('username'))
-      this.setUser(localStorage.getItem('username'));
+      this.setUser(storage.get(USER_NAME, []));
     }
     if (this.$store.getters.isLogin) {
       this.$router.push('recommend');
+    }
+  }
+}
+
+// 判断是否登录
+export const checkIsLogin = {
+  mounted() {
+    let isLogin = storage.get(USER_NAME, []);
+    if (!isLogin || !isLogin.length) {
+      this.$router.push('login')
     }
   }
 }
@@ -59,7 +75,8 @@ export const playerMixin = {
       "playlist",
       "mode",
       "currentSong",
-      "playing"
+      "playing",
+      "favoriteList"
     ])
   },
   methods: {
@@ -78,6 +95,25 @@ export const playerMixin = {
       this.resetCurrentIndex(list);
       this.setPlayList(list);
     },
+    getFavoriteIcon(song) {
+      if (this.isFavorite(song)) {
+        return 'icon-favorite'
+      }
+      return 'icon-not-favorite'
+    },
+    toggleFavorite(song) {
+      if (this.isFavorite(song)) {
+        this.deleteForvorite(song)
+      } else {
+        this.saveForvorite(song)
+      }
+    },
+    isFavorite(song) {
+      let index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
+      })
+      return index > -1
+    },
     resetCurrentIndex(list) {
       // 获取相同id的第一个元素的索引
       let index = list.findIndex(item => {
@@ -90,7 +126,8 @@ export const playerMixin = {
       setPlayMode: "SET_MODE",
       setPlayList: "SET_PLAY_LIST",
       setPlayingState: "SET_PALYING_STATE"
-    })
+    }),
+    ...mapActions(['saveForvorite', 'deleteForvorite'])
   }
 
 }
@@ -99,7 +136,8 @@ export const playerMixin = {
 export const playMixin = {
   data() {
     return {
-      query: ''
+      query: '',
+      refreshDelay: 120
     }
   },
   computed: {

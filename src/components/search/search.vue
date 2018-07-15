@@ -40,11 +40,11 @@ import SearchList from "base/search-list/search-list";
 import Confirm from "base/confirm/confirm";
 import Suggest from "components/suggest/suggest";
 import { getHotKey } from "api/search";
-import { playListMixin,playMixin } from "common/js/mixin";
+import { checkIsLogin,playListMixin,playMixin } from "common/js/mixin";
 import { ERR_OK } from "api/config";
 import {mapActions } from "vuex";
 export default {
-  mixins: [playListMixin,playMixin],
+  mixins: [checkIsLogin,playListMixin,playMixin],
   
   data() {
     return {

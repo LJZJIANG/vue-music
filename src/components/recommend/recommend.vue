@@ -30,6 +30,13 @@
         <loading></loading>
       </div>
     </scroll>
+    <div class="tip-container">
+      <top-tip ref="topTip">
+        <div class="tip-title">
+          <span class="text" v-text="info"></span>
+        </div>
+      </top-tip>
+    </div>
     <router-view></router-view>
   </div>
 </template>
@@ -41,38 +48,49 @@ import { checkIsLogin } from "common/js/mixin";
 import Slider from "base/slider/slider";
 import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
-import { mapMutations } from "vuex";
-import {playListMixin} from 'common/js/mixin'
+import { mapGetters, mapMutations } from "vuex";
+import { playListMixin } from "common/js/mixin";
+import TopTip from "base/top-tip/top-tip";
 export default {
   data() {
     return {
       recommends: [],
-      discList: []
+      discList: [],
+      info: "欢迎回来"
     };
   },
-  mixins: [checkIsLogin,playListMixin],
+  computed: {
+    ...mapGetters(["currentUser"])
+  },
+  mixins: [checkIsLogin, playListMixin],
   created() {
     this.$nextTick(() => {
       this._getRecommend();
       this._getDiscList();
     });
   },
+  mounted() {
+    setTimeout(() => {
+      this.info = `欢迎回来,${this.currentUser}`;
+      this.$refs.topTip.show();
+    }, 100);
+  },
   methods: {
-    handlePlaylist(playlist){
-        const bottom = playlist.length>0?'60px':'';
-        const list = this.$refs.recommend;
-        if (list) {
-          list.style.bottom = bottom;
-          // 调用子组件的refresh方法，刷新
-          this.$refs.scroll.refresh();
-        }
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      const list = this.$refs.recommend;
+      if (list) {
+        list.style.bottom = bottom;
+        // 调用子组件的refresh方法，刷新
+        this.$refs.scroll.refresh();
+      }
     },
-    selectItem(item){
+    selectItem(item) {
       this.$router.push({
-        path:`/recommend/${item.dissid}`
-      })
+        path: `/recommend/${item.dissid}`
+      });
 
-      this.setDisc(item)
+      this.setDisc(item);
     },
     // 获取推荐
     _getRecommend() {
@@ -96,12 +114,13 @@ export default {
         this.$refs.scroll.refresh();
       }
     },
-    ...mapMutations({ setUser: "SET_USER_STATE",setDisc:'SET_DISC' })
+    ...mapMutations({ setUser: "SET_USER_STATE", setDisc: "SET_DISC" })
   },
   components: {
     Slider,
     Scroll,
-    Loading
+    Loading,
+    TopTip
   }
 };
 </script>
@@ -173,6 +192,17 @@ export default {
         }
       }
     }
+  }
+
+  .tip-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    height: 50px;
+    line-height: 50px;
   }
 }
 </style>

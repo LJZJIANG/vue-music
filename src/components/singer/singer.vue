@@ -10,7 +10,7 @@ import { getSingerList } from "api/singer";
 import { ERR_OK } from "api/config";
 import Singer from "common/js/singer";
 import Listview from "base/listview/listview";
-import { playListMixin } from "common/js/mixin";
+import { checkIsLogin, playListMixin } from "common/js/mixin";
 import { mapMutations } from "vuex";
 
 const HOT_NAME = "热门";
@@ -23,7 +23,7 @@ export default {
       singerList: []
     };
   },
-  mixins: [playListMixin],
+  mixins: [checkIsLogin, playListMixin],
   created() {
     this._getSingerList();
   },

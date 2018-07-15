@@ -1,17 +1,64 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Recommend from '@/components/recommend/recommend'
-import Singer from '@/components/singer/singer'
-import Rank from '@/components/rank/rank'
-import Search from '@/components/search/search'
-import Login from '@/components/login/login'
-import Register from '@/components/register/register'
-import SingerDetail from '@/components/singer-detail/singer-detail'
-import Disc from '@/components/disc/disc'
-import TopList from '@/components/top-list/top-list'
 
-import MyButton from '@/components/mybutton/mybutton'
-
+/*
+  路由懒加载  按需加载，解决首页加载资源过多
+ */
+const Recommend = resolve => {
+  import ('@/components/recommend/recommend').then(module => {
+    resolve(module)
+  })
+}
+const Singer = resolve => {
+  import ('@/components/singer/singer').then(module => {
+    resolve(module)
+  })
+}
+const Rank = resolve => {
+  import ('@/components/rank/rank').then(module => {
+    resolve(module)
+  })
+}
+const Search = resolve => {
+  import ('@/components/search/search').then(module => {
+    resolve(module)
+  })
+}
+const Login = resolve => {
+  import ('@/components/login/login').then(module => {
+    resolve(module)
+  })
+}
+const Register = resolve => {
+  import ('@/components/register/register').then(module => {
+    resolve(module)
+  })
+}
+const SingerDetail = resolve => {
+  import ('@/components/singer-detail/singer-detail').then(module => {
+    resolve(module)
+  })
+}
+const Disc = resolve => {
+  import ('@/components/disc/disc').then(module => {
+    resolve(module)
+  })
+}
+const TopList = resolve => {
+  import ('@/components/top-list/top-list').then(module => {
+    resolve(module)
+  })
+}
+const UserCenter = resolve => {
+  import ('@/components/user-center/user-center').then(module => {
+    resolve(module)
+  })
+}
+const MyButton = resolve => {
+  import ('@/components/mybutton/mybutton').then(module => {
+    resolve(module)
+  })
+}
 Vue.use(Router)
 
 export default new Router({
@@ -23,16 +70,16 @@ export default new Router({
       path: '/recommend',
       name: 'recommend',
       component: Recommend,
-      children:[{
-        path:':id',
-        component:Disc
+      children: [{
+        path: ':id',
+        component: Disc
       }]
       // 路由独享守卫
-     /*  beforeEnter: (to, from, next) => {
-        console.log(to)
-        console.log(from)
-        next()
-      } */
+      /*  beforeEnter: (to, from, next) => {
+         console.log(to)
+         console.log(from)
+         next()
+       } */
     },
     {
       path: '/singer',
@@ -47,9 +94,9 @@ export default new Router({
       path: '/rank',
       name: 'rank',
       component: Rank,
-      children:[{
-        path:':id',
-        component:TopList
+      children: [{
+        path: ':id',
+        component: TopList
       }]
     },
     {
@@ -71,11 +118,15 @@ export default new Router({
       }]
     },
     {
+      path: '/user',
+      component: UserCenter
+    },
+    {
       path: '*',
       redirect: 'recommend'
-    },{
-      path:'/mybutton',
-      component:MyButton
+    }, {
+      path: '/mybutton',
+      component: MyButton
 
     }
   ]

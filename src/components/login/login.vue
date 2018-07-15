@@ -1,50 +1,72 @@
 <template>
-  <div id="login">
-      <div class="container">
-        <div class="logo-wrapper">
-            <img src="../../common/image/default.png" alt="" srcset="" class="logo">
+    <div id="login">
+        <div class="container">
+            <div class="logo-wrapper">
+                <img src="../../common/image/default.png" alt="" srcset="" class="logo">
+            </div>
+            <div class="main">
+                <div class="username-box">
+                    <img class="icon icon-user" src="../../common/image/user.png">
+                    <input type="text" placeholder="用户名" v-model="username">
+                    <img class="icon icon-del" src="../../common/image/del.png" v-show="username.length" @click="clearUserName">
+                </div>
+                <div class="password-box">
+                    <img class="icon icon-password" src="../../common/image/password.png">
+                    <input type="password" placeholder="密码" v-model="password">
+                    <img class="icon icon-del" v-show="password.length" @click="clearPassWord" src="../../common/image/del.png">
+                </div>
+                <div class="remember">
+                    <label class="remember-password"><input type="checkbox" name="remember-password" value="1" v-model="rememberPassword">
+                        <span>记住密码</span>
+                    </label>
+                    <label class="auto-login"><input type="checkbox" name="auto-login" value="1" v-model="autoLogin" @click="setRememberPassword">
+                        <span>自动登录</span>
+                    </label>
+                </div>
+                <div class="login-box" @click="login">
+                    登 录
+                </div>
+                <div class="info">
+                    <router-link class="register" to="register">注册</router-link>
+                    <span class="forgot">忘记密码</span>
+                </div>
+            </div>
         </div>
-        <div class="main">
-            <div class="username-box">
-                <img class="icon icon-user" src="../../common/image/user.png">
-                <input type="text" placeholder="用户名" v-model="username">
-                <img class="icon icon-del"  src="../../common/image/del.png" v-show="username.length" @click="clearUserName">
-            </div>
-            <div class="password-box">
-                <img class="icon icon-password" src="../../common/image/password.png">
-                <input type="password" placeholder="密码" v-model="password">
-                <img class="icon icon-del" v-show="password.length"  @click="clearPassWord"  src="../../common/image/del.png">
-            </div>
-            <div class="remember">
-                <label class="remember-password"><input type="checkbox" name="remember-password" value="1" v-model="rememberPassword"><span>记住密码</span></label>
-                 <label class="auto-login"><input type="checkbox" name="auto-login" value="1" v-model="autoLogin" @click="setRememberPassword"><span>自动登录</span></label>
-            </div>
-            <div class="login-box" @click="login">
-                登 录
-            </div>
-            <div class="info">
-                <router-link class="register" to="register">注册</router-link>
-                <span class="forgot">忘记密码</span>
-            </div>
+        <div class="tip-container">
+            <top-tip ref="topTip">
+                <div class="tip-title">
+                    <span class="text" v-text="info"></span>
+                </div>
+            </top-tip>
         </div>
     </div>
-  </div>
 </template>
 <script>
-import { checkIsLogin } from "common/js/mixin";
+import { checkAutoLogin } from "common/js/mixin";
 import { mapMutations } from "vuex";
+import TopTip from "base/top-tip/top-tip";
+import storage from "good-storage";
+
+const IS_AUTO_LOGIN = "__autoLogin__";
+const USER_NAME = "__username__";
+const PASS_WORD = "__password__";
+
 export default {
   data() {
     return {
       username: "",
       password: "",
       rememberPassword: "",
-      autoLogin: ""
+      autoLogin: "",
+      info: ""
     };
   },
-  mixins: [checkIsLogin],
+  mixins: [checkAutoLogin],
   created() {
     this.getLocalStorage();
+  },
+  components: {
+    TopTip
   },
   methods: {
     /**@augments
@@ -57,11 +79,13 @@ export default {
       let username = this.username;
       let password = this.password;
       if (!username) {
-        alert("用户名不能为空");
+        this.info = "用户名不能为空";
+        this.$refs.topTip.show();
         return;
       }
       if (!password) {
-        alert("密码不能为空");
+        this.info = "密码不能为空";
+        this.$refs.topTip.show();
         return;
       }
       this.$axios.get(this.$baseURL + "musicAppUsers.json").then(res => {
@@ -89,7 +113,8 @@ export default {
 
           this.$router.push("recommend");
         } else {
-          alert("用户或密码不正确");
+          this.info = "用户或密码不正确";
+          this.$refs.topTip.show();
         }
       });
     },
@@ -108,25 +133,29 @@ export default {
     setLocalStorage(username, password) {
       //   alert(this.username + this.password);
       if (this.rememberPassword) {
-        localStorage.setItem("username", username);
-        localStorage.setItem("password", password);
+        storage.set(USER_NAME, username);
+        storage.set(PASS_WORD, password);
       }
       if (this.autoLogin) {
-        localStorage.setItem("autoLogin", true);
+        storage.set(IS_AUTO_LOGIN, true);
       }
     },
     getLocalStorage() {
-      let username = localStorage.getItem("username");
-      let password = localStorage.getItem("password");
+      let username = storage.get(USER_NAME, []);
+      let password = storage.get(PASS_WORD, []);
+      let isAutologin = storage.get(IS_AUTO_LOGIN, []);
       if (username && password) {
         this.username = username;
         this.password = password;
         this.rememberPassword = true;
       }
+      if (isAutologin) {
+        this.autoLogin = true;
+      }
     },
     removeLocalStorage() {
-      localStorage.removeItem("username");
-      localStorage.removeItem("password");
+      storage.remove(USER_NAME);
+      storage.remove(PASS_WORD);
     }
   }
 };
@@ -257,6 +286,17 @@ export default {
                 float: right;
             }
         }
+    }
+
+    .tip-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+        height: 50px;
+        line-height: 50px;
     }
 }
 </style>

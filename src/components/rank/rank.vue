@@ -27,11 +27,11 @@ import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
 import { getTopList } from "api/rank";
 import { ERR_OK } from "api/config";
-import { playListMixin } from "common/js/mixin";
+import {checkIsLogin, playListMixin } from "common/js/mixin";
 import { mapMutations } from "vuex";
 
 export default {
-  mixins: [playListMixin],
+  mixins: [checkIsLogin,playListMixin],
   data() {
     return {
       topList: []
