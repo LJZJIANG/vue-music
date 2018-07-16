@@ -54,15 +54,16 @@ export default {
 <style lang="stylus" scoped>
 .pop-container {
     position: fixed;
-    width: 90%;
+    width: 84%;
     top: 30%;
-    left: 5%;
+    left: 8%;
     background: #fff;
     z-index: 999;
     padding: 5px 10px;
     border-radius: 5px;
     color: #888;
     box-sizing: border-box;
+    font-size: 14px;
 
     &.fade-enter-active, &.fade-leave-active {
         transition: all 0.5s;
@@ -80,8 +81,8 @@ export default {
         align-items: center;
 
         img {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             margin-right: 5px;
         }
 
