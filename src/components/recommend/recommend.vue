@@ -44,7 +44,6 @@
 <script>
 import { ERR_OK } from "api/config";
 import { getRecommend, getDiscList } from "api/recommend";
-import { checkIsLogin } from "common/js/mixin";
 import Slider from "base/slider/slider";
 import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
@@ -62,7 +61,7 @@ export default {
   computed: {
     ...mapGetters(["currentUser"])
   },
-  mixins: [checkIsLogin, playListMixin],
+  mixins: [ playListMixin],
   created() {
     this.$nextTick(() => {
       this._getRecommend();
