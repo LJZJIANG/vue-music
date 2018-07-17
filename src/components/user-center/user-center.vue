@@ -33,12 +33,12 @@
 import Switches from "base/switches/switches";
 import Scroll from "base/scroll/scroll";
 import SongList from "base/song-list/song-list";
-import { checkIsLogin,playListMixin } from "common/js/mixin";
+import {playListMixin } from "common/js/mixin";
 import { mapGetters, mapActions } from "vuex";
 import Song from "common/js/song";
 import NoResult from "base/no-result/no-result";
 export default {
-  mixins: [checkIsLogin,playListMixin],
+  mixins: [playListMixin],
   data() {
     return {
       switches: [{ name: "我喜欢的" }, { name: "最近听的" }],
