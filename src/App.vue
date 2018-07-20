@@ -2,16 +2,23 @@
   <div id="app">
     <m-header @showPop="showPop"></m-header>
     <tab></tab>
-    <!-- 将页面存入缓存，页面返回时，不在请求数据 -->
+    
     <keep-alive>
-      <router-view></router-view>
+      <router-view v-if="$route.meta.keepAlive"></router-view>
     </keep-alive>
+
+    <router-view v-if="!$route.meta.keepAlive">
+    </router-view>
+
     <player></player>
     <pop ref="pop"></pop>
   </div>
 </template>
 
 <script>
+// 将页面存入缓存，页面返回时，不在请求数据
+//      <keep-alive include="rank">
+//     需求：排行榜==》歌手页面  缓存     搜索==》歌手页面  加载 （详见search、singer文件）
 var _this;
 import MHeader from "components/mHeader/mHeader";
 import Tab from "components/tab/tab";
