@@ -27,10 +27,11 @@ import Scroll from "base/scroll/scroll";
 import Loading from "base/loading/loading";
 import { getTopList } from "api/rank";
 import { ERR_OK } from "api/config";
-import {playListMixin } from "common/js/mixin";
+import { playListMixin } from "common/js/mixin";
 import { mapMutations } from "vuex";
 
 export default {
+  // name:'rank', //用于 <keep-alive include="rank">缓存
   mixins: [playListMixin],
   data() {
     return {
@@ -41,20 +42,20 @@ export default {
     this._getTopList();
   },
   methods: {
-    handlePlaylist(playlist){
-        const bottom = playlist.length>0?'60px':'';
-        const list = this.$refs.rank;
-        if (list) {
-          list.style.bottom = bottom;
-          // 调用子组件的refresh方法，刷新
-          this.$refs.toplist.refresh();
-        }
+    handlePlaylist(playlist) {
+      const bottom = playlist.length > 0 ? "60px" : "";
+      const list = this.$refs.rank;
+      if (list) {
+        list.style.bottom = bottom;
+        // 调用子组件的refresh方法，刷新
+        this.$refs.toplist.refresh();
+      }
     },
-    selectItem(item){
+    selectItem(item) {
       this.$router.push({
-        path:`/rank/${item.id}`
-      })
-      this.setTopList(item)
+        path: `/rank/${item.id}`
+      });
+      this.setTopList(item);
     },
     _getTopList() {
       getTopList().then(res => {
@@ -64,12 +65,18 @@ export default {
       });
     },
     ...mapMutations({
-      setTopList:'SET_TOP_LIST'
+      setTopList: "SET_TOP_LIST"
     })
   },
   components: {
     Scroll,
     Loading
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.path == "/singer") {
+      to.meta.keepAlive = true;
+      next();
+    }
   }
 };
 </script>

@@ -88,7 +88,10 @@ export default new Router({
       children: [{
         path: ':id',
         component: SingerDetail
-      }]
+      }],
+      meta:{
+        keepAlive:true
+      }
     },
     {
       path: '/rank',
@@ -97,7 +100,10 @@ export default new Router({
       children: [{
         path: ':id',
         component: TopList
-      }]
+      }],
+      meta:{
+        keepAlive:false
+      }
     },
     {
       path: '/login',
@@ -111,14 +117,19 @@ export default new Router({
     },
     {
       path: '/search',
+      name:'search',
       component: Search,
       children: [{
         path: ':id',
         component: SingerDetail
-      }]
+      }],
+      meta:{
+        keepAlive:false
+      }
     },
     {
       path: '/user',
+      name:'usercenter',
       component: UserCenter
     },
     {
