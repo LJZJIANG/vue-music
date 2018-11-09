@@ -40,64 +40,64 @@
 </template>
 
 <script>
-import SearchBox from "base/search-box/search-box";
-import Switches from "base/switches/switches";
-import Suggest from "components/suggest/suggest";
-import { playMixin } from "common/js/mixin";
-import { mapGetters, mapActions } from "vuex";
-import Scroll from "base/scroll/scroll";
-import SongList from "base/song-list/song-list";
-import SearchList from "base/search-list/search-list";
-import TopTip from "base/top-tip/top-tip";
+import SearchBox from 'base/search-box/search-box'
+import Switches from 'base/switches/switches'
+import Suggest from 'components/suggest/suggest'
+import { playMixin } from 'common/js/mixin'
+import { mapGetters, mapActions } from 'vuex'
+import Scroll from 'base/scroll/scroll'
+import SongList from 'base/song-list/song-list'
+import SearchList from 'base/search-list/search-list'
+import TopTip from 'base/top-tip/top-tip'
 export default {
   mixins: [playMixin],
   data() {
     return {
       showFlag: false,
       showSinger: false,
-      switches: [{ name: "最近播放" }, { name: "搜索历史" }],
+      switches: [{ name: '最近播放' }, { name: '搜索历史' }],
       currentIndex: 0
-    };
+    }
   },
   computed: {
-    ...mapGetters(["playHistory"])
+    ...mapGetters(['playHistory'])
   },
   methods: {
     show() {
-      this.showFlag = true;
+      this.showFlag = true
       setTimeout(() => {
         if (this.currentIndex === 0) {
-          this.$refs.songList.refresh();
+          this.$refs.songList.refresh()
         } else {
-          this.$refs.searchList.refresh();
+          this.$refs.searchList.refresh()
         }
-      }, 20);
+      }, 20)
     },
     hidePage() {
       // this.hide();
       // this.$emit('hide')
     },
     hide() {
-      this.showFlag = false;
+      this.showFlag = false
     },
     selectItem(index) {
-      this.currentIndex = index;
+      this.currentIndex = index
     },
     selectSuggest() {
-      this.saveSearch();
-      this.showTip();
+      this.saveSearch()
+      this.showTip()
     },
     selectSong(item, index) {
       if (index !== 0) {
-        this.insertSong(item);
-        this.hidePage();
-        this.showTip();
+        this.insertSong(item)
+        this.hidePage()
+        this.showTip()
       }
     },
     showTip() {
-      this.$refs.topTip.show();
+      this.$refs.topTip.show()
     },
-    ...mapActions(["insertSong"])
+    ...mapActions(['insertSong'])
   },
   components: {
     SearchBox,
@@ -108,7 +108,7 @@ export default {
     SearchList,
     TopTip
   }
-};
+}
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
